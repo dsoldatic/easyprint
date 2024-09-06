@@ -214,3 +214,64 @@ function addNotification(printerId, message) {
 
 // Automatski dohvaćaj status printera svakih 0.5 sekundi
 setInterval(getPrinterStatus, 500);
+
+// Function to fetch printer status and update the Control Panel
+function updateControlPanel() {
+    const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_4', 'prusa_mk2s_5']; // Add your printer IDs here
+    const controlPanelContainer = document.getElementById('control-panel-container');
+    controlPanelContainer.innerHTML = ''; // Clear the control panel container
+
+    printerIds.forEach(printerId => {
+        // Create a printer card for each printer
+        const printerCard = document.createElement('div');
+        printerCard.classList.add('printer-card');
+        printerCard.id = `printer-card-${printerId}`;
+
+        // Add a placeholder message until status is fetched
+        printerCard.innerHTML = `<h3>${printerId.toUpperCase().replace('_', ' ')}:</h3><p>Loading status...</p>`;
+        controlPanelContainer.appendChild(printerCard);
+
+        // Fetch the printer status
+        fetch('/api/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ printer_id: printerId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const printerStatus = data.response;
+
+            if (printerStatus.error) {
+                // Printer not found or disconnected
+                printerCard.innerHTML = `
+                    <h3>${printerId.toUpperCase().replace('_', ' ')}:</h3>
+                    <p>Printer not found or disconnected</p>
+                `;
+            } else {
+                // Display the printer's status with cleaned-up values
+                printerCard.innerHTML = `
+                    <h3>${printerId.toUpperCase().replace('_', ' ')}:</h3>
+                    <p><strong>Status:</strong> ${printerStatus.print_status}</p>
+                    <p><strong>Hotend Temp:</strong> ${printerStatus.hotend_temp}°C</p>
+                    <p><strong>Bed Temp:</strong> ${printerStatus.bed_temp}°C</p>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error(`Error fetching status for ${printerId}:`, error);
+            printerCard.innerHTML = `
+                <h3>${printerId.toUpperCase().replace('_', ' ')}:</h3>
+                <p>Error fetching status</p>
+            `;
+        });
+    });
+}
+
+// Continuously refresh the control panel every 1000ms (1 second)
+setInterval(updateControlPanel, 1000);
+
+// Ensure Control Panel updates when the tab is clicked
+document.querySelector('.tablinks[onclick="openTab(event, \'ControlPanel\')"]').addEventListener('click', updateControlPanel);
+

@@ -111,7 +111,8 @@
         <button class="tablinks" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
         <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
         <button class="tablinks" onclick="openTab(event, 'Calibration')">Calibration</button>
-    </div>
+        <button class="tablinks" onclick="openTab(event, 'ControlPanel')">Control Panel</button> <!-- New tab for Control Panel -->
+    </div>    
 
     <!-- Tab za Home (Početni) -->
     <div id="Home" class="tabcontent">
@@ -179,6 +180,14 @@
 <p><small><em>The hotend nozzle must be over 215°C to enable these buttons.</em></small></p> <!-- Instruction added -->
 
     </div>
+
+<!-- Control Panel Tab -->
+<div id="ControlPanel" class="tabcontent">
+    <h2>Control Panel</h2>
+    <div id="control-panel-container" class="control-panel-grid">
+        <!-- Printer status cards will be injected here -->
+    </div>
+</div>
 
     <!-- Tab za Settings -->
     <div id="Settings" class="tabcontent">

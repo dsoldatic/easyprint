@@ -47,40 +47,43 @@ def get_printer_status(printer_id):
     if serial_port:
         try:
             with serial.Serial(serial_port, 115200, timeout=5) as ser:
-                time.sleep(2)  # Dajemo printeru vremena da se pokrene
-                
-                # Fetch Print Status
-                ser.write(b'M27\n')  # Komanda za status ispisa
-                ser.flush()
-                print_status = ser.readline().decode('utf-8').strip()
-                
-                # Fetch Temperature
-                ser.write(b'M105\n')  # Komanda za temperaturu
-                ser.flush()
-                temp_status = ser.readline().decode('utf-8').strip()
+                time.sleep(2)  # Allow the printer some time to initialize
 
-                 # Extract hotend temperature from the M105 response
-                hotend_temp = None
-                if "T:" in temp_status:
-                    hotend_temp = float(temp_status.split("T:")[1].split(" ")[0])
-
-                # Fetch Endstop Status
-                ser.write(b'M119\n')  # Komanda za status krajnjih prekidača
+                # Fetch Print Status (M27)
+                ser.write(b'M27\n')
                 ser.flush()
-                endstop_status = ser.readline().decode('utf-8').strip()
-                
+                print_status_raw = ser.readline().decode('utf-8').strip()
+
+                # Fetch Temperature (M105)
+                ser.write(b'M105\n')
+                ser.flush()
+                temp_status_raw = ser.readline().decode('utf-8').strip()
+
+                # Parse temperature from the M105 response
+                hotend_temp, bed_temp = None, None
+                if "T:" in temp_status_raw:
+                    hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]
+                if "B:" in temp_status_raw:
+                    bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]
+
+                # Clean print status (Extract relevant part)
+                if "SD printing" in print_status_raw:
+                    print_status = "Printing" if "SD printing" in print_status_raw else "Idle"
+                else:
+                    print_status = "Not SD printing"
+
+                # Return parsed status information
                 return {
-                    'print_status': print_status if print_status else "Printer idle or no print job",
-                    'temperature_status': temp_status if temp_status else "Temperature data unavailable",
-                    'hotend_temp': hotend_temp,                    
-                    'endstop_status': endstop_status if endstop_status else "Endstop status unavailable"
+                    'print_status': print_status,
+                    'hotend_temp': hotend_temp if hotend_temp else "N/A",
+                    'bed_temp': bed_temp if bed_temp else "N/A"
                 }
+
         except (serial.SerialException, OSError):
-            return {
-                'error': "Printer not found or disconnected"
-            }
+            return {'error': "Printer not found or disconnected"}
     else:
         return {'error': "Printer not found or disconnected"}
+
 
 
 @app.route('/api/status', methods=['POST'])
@@ -123,4 +126,4 @@ def sd_files():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5005)
