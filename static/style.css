@@ -1,0 +1,169 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+}
+
+.printer-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+   /* Base styles for buttons */
+   button {
+    padding: 10px;
+    margin: 5px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Styles for disabled buttons */
+button:disabled {
+    background-color: #ccc; /* Gray background when disabled */
+    color: #666; /* Darker text color when disabled */
+    cursor: not-allowed; /* Shows the "not allowed" cursor */
+}
+
+input {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Gumb za notifikacije */
+.notification-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.notification-button button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.notification-button button:hover {
+    background-color: #0056b3;
+}
+
+/* Modal za notifikacije */
+.modal {
+    display: none; /* Skriven po defaultu */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Tamna pozadina */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content .close:hover,
+.modal-content .close:focus {
+    color: black;
+}
+
+#notification-list {
+    margin-top: 20px;
+    max-height: 300px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+ /* Styles for instruction text */
+ small {
+    font-size: 0.9em;
+    color: #555;
+}
+
+em {
+    font-style: italic;
+}
+
+  /* Grid layout for calibration buttons */
+  .calibration-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-gap: 20px; /* Space between buttons */
+    max-width: 600px; /* Adjust width as necessary */
+    margin: 0 auto; /* Center align */
+}
+
+.calibration-grid button {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.calibration-grid button:hover {
+    background-color: #0056b3;
+}
+
+ /* Multi-printer management styles */
+ #multi-printer-select-container {
+    display: none;
+}
+
+/* Additional styles for layout */
+.calibration-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
