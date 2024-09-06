@@ -42,48 +42,51 @@ def control_printer():
     return jsonify({'status': 'success', 'response': response})
 
 # Funkcija za dohvaćanje statusa ispisa (M27), temperature (M105) i krajnjih prekidača (M119)
+# Store open serial connections
+open_connections = {}
+
 def get_printer_status(printer_id):
     serial_port = printers.get(printer_id)
     if serial_port:
         try:
-            with serial.Serial(serial_port, 115200, timeout=5) as ser:
-                time.sleep(2)  # Allow the printer some time to initialize
+            # Reuse the open connection if it exists
+            if printer_id not in open_connections:
+                open_connections[printer_id] = serial.Serial(serial_port, 115200, timeout=5)
+                time.sleep(2)  # Give the printer time to initialize
 
-                # Fetch Print Status (M27)
-                ser.write(b'M27\n')
-                ser.flush()
-                print_status_raw = ser.readline().decode('utf-8').strip()
+            ser = open_connections[printer_id]
 
-                # Fetch Temperature (M105)
-                ser.write(b'M105\n')
-                ser.flush()
-                temp_status_raw = ser.readline().decode('utf-8').strip()
+            # Fetch Print Status (M27)
+            ser.write(b'M27\n')
+            ser.flush()
+            print_status_raw = ser.readline().decode('utf-8').strip()
 
-                # Parse temperature from the M105 response
-                hotend_temp, bed_temp = None, None
-                if "T:" in temp_status_raw:
-                    hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]
-                if "B:" in temp_status_raw:
-                    bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]
+            # Fetch Temperature (M105)
+            ser.write(b'M105\n')
+            ser.flush()
+            temp_status_raw = ser.readline().decode('utf-8').strip()
 
-                # Clean print status (Extract relevant part)
-                if "SD printing" in print_status_raw:
-                    print_status = "Printing" if "SD printing" in print_status_raw else "Idle"
-                else:
-                    print_status = "Not SD printing"
+            # Parse temperature from the M105 response
+            hotend_temp, bed_temp = None, None
+            if "T:" in temp_status_raw:
+                hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]
+            if "B:" in temp_status_raw:
+                bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]
 
-                # Return parsed status information
-                return {
-                    'print_status': print_status,
-                    'hotend_temp': hotend_temp if hotend_temp else "N/A",
-                    'bed_temp': bed_temp if bed_temp else "N/A"
-                }
+            # Clean print status
+            print_status = "Not SD printing" if "Not SD printing" in print_status_raw else "Printing"
+
+            # Return parsed status information
+            return {
+                'print_status': print_status,
+                'hotend_temp': hotend_temp if hotend_temp else "N/A",
+                'bed_temp': bed_temp if bed_temp else "N/A"
+            }
 
         except (serial.SerialException, OSError):
             return {'error': "Printer not found or disconnected"}
     else:
         return {'error': "Printer not found or disconnected"}
-
 
 
 @app.route('/api/status', methods=['POST'])
