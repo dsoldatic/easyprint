@@ -16,16 +16,26 @@ function getPrinterStatus() {
       });
 }
 
-// Funkcija za slanje G-code naredbi
-function sendGcode(printerId, gcode) {
+// Updated sendGcode function to handle multiple printers
+function sendGcode(printerId, gcode, callback) {
     fetch('/api/control', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ printer_id: printerId, gcode_command: gcode })
-    }).then(response => response.json())
-      .then(data => console.log(data));
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(`G-code response from ${printerId}:`, data);
+        if (callback) {
+            callback();
+        }
+    })
+    .catch(error => {
+        console.error(`Error sending G-code to ${printerId}:`, error);
+        addNotification(printerId, 'Error sending G-code.');
+    });
 }
 
 // Funkcija za start printa s notifikacijom
@@ -144,13 +154,12 @@ function closeNotifications() {
     document.getElementById('notificationModal').style.display = 'none';
 }
 
-// Funkcija za preheat s obzirom na materijal
+// Function to apply preheat settings to all selected printers
 function preheat(material) {
-    const printerId = document.getElementById('printer-select').value;
-
+    const printerIds = getSelectedPrinters(); // Get selected printers (single or multiple)
     let hotendTemp, bedTemp, materialName;
 
-    // Postavi temperature na temelju odabranog materijala
+    // Set temperatures based on the selected material
     switch (material) {
         case 'PLA':
             hotendTemp = 215;
@@ -181,11 +190,68 @@ function preheat(material) {
             return;
     }
 
-    // Slanje G-code naredbi za postavljanje temperatura
-    sendGcode(printerId, `M104 S${hotendTemp}`);  // Postavi temperaturu mlaznice
-    sendGcode(printerId, `M140 S${bedTemp}`);     // Postavi temperaturu podloge
-    addNotification(printerId, `Preheating for ${materialName} (Hotend: ${hotendTemp}°C, Bed: ${bedTemp}°C)`);
+    // Send the preheat command once to each printer
+    printerIds.forEach(printerId => {
+        sendGcode(printerId, `M104 S${hotendTemp}`);  // Set hotend temperature
+        sendGcode(printerId, `M140 S${bedTemp}`);     // Set bed temperature
+        addNotification(printerId, `Preheating for ${materialName} (Hotend: ${hotendTemp}°C, Bed: ${bedTemp}°C)`);
+    });
 }
+
+// Function to monitor printer status (fetching periodically without sending commands)
+function monitorPrinterStatus() {
+    const printerIds = getSelectedPrinters();
+
+    printerIds.forEach((printerId, index) => {
+        setTimeout(() => {
+            fetch('/api/status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ printer_id: printerId }),  // No G-code commands, just retrieve status
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const printerStatus = data.response;
+                    updateStatusDisplay(printerId, printerStatus);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching status:', error);
+            });
+        }, index * 2000);  // Stagger status checks with 2-second delay between printers
+    });
+}
+
+
+// Periodically monitor printer status every 5 seconds
+setInterval(monitorPrinterStatus, 5000);
+
+// Function to display status updates in the UI
+function updateStatusDisplay(printerId, status) {
+    const statusElement = document.getElementById(`status-${printerId}`);
+    statusElement.innerHTML = `
+        <strong>${printerId.replace('_', ' ').toUpperCase()}:</strong>
+        <br><strong>Print Status:</strong> ${status.print_status}
+        <br><strong>Hotend Temperature:</strong> ${status.hotend_temp || 'N/A'} °C
+        <br><strong>Bed Temperature:</strong> ${status.bed_temp || 'N/A'} °C
+    `;
+}
+
+// Function to apply cooldown settings to all selected printers
+function cooldown() {
+    const printerIds = getSelectedPrinters(); // Get selected printers (single or multiple)
+
+    // Send cooldown G-code to all selected printers
+    printerIds.forEach(printerId => {
+        sendGcode(printerId, 'M104 S0');  // Turn off hotend
+        sendGcode(printerId, 'M140 S0');  // Turn off bed
+        addNotification(printerId, 'Cooldown initiated (Hotend: 0°C, Bed: 0°C)');
+    });
+}
+
 
 // Funkcija za cooldown
 function cooldown() {
@@ -215,8 +281,8 @@ function addNotification(printerId, message) {
 // Automatski dohvaćaj status printera svakih 0.5 sekundi
 setInterval(getPrinterStatus, 500);
 
-// Function to fetch printer status and update the Control Panel
-function updateControlPanel() {
+ // Function to fetch printer status and update the Control Panel
+ function updateControlPanel() {
     const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_4', 'prusa_mk2s_5']; // Add your printer IDs here
     const controlPanelContainer = document.getElementById('control-panel-container');
     controlPanelContainer.innerHTML = ''; // Clear the control panel container
@@ -242,7 +308,6 @@ function updateControlPanel() {
         .then(response => response.json())
         .then(data => {
             const printerStatus = data.response;
-
             if (printerStatus.error) {
                 // Printer not found or disconnected
                 printerCard.innerHTML = `
@@ -250,12 +315,11 @@ function updateControlPanel() {
                     <p>Printer not found or disconnected</p>
                 `;
             } else {
-                // Display the printer's status with cleaned-up values
+                // Display the printer's status
                 printerCard.innerHTML = `
                     <h3>${printerId.toUpperCase().replace('_', ' ')}:</h3>
-                    <p><strong>Status:</strong> ${printerStatus.print_status}</p>
-                    <p><strong>Hotend Temp:</strong> ${printerStatus.hotend_temp}°C</p>
-                    <p><strong>Bed Temp:</strong> ${printerStatus.bed_temp}°C</p>
+                    <p><strong>Print Status:</strong> ${printerStatus.print_status || 'N/A'}</p>
+                    <p><strong>Temperature:</strong> ${printerStatus.temperature_status || 'N/A'}</p>
                 `;
             }
         })
@@ -269,9 +333,60 @@ function updateControlPanel() {
     });
 }
 
-// Continuously refresh the control panel every 1000ms (1 second)
-setInterval(updateControlPanel, 1000);
-
 // Ensure Control Panel updates when the tab is clicked
 document.querySelector('.tablinks[onclick="openTab(event, \'ControlPanel\')"]').addEventListener('click', updateControlPanel);
 
+// Fetch printer status from API with delay before fetching next status
+function fetchPrinterStatus(printerId) {
+    setTimeout(() => {
+        fetch('/api/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ printer_id: printerId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const statusItem = document.getElementById(`status-${printerId}`);
+            if (data.status === 'success') {
+                const printerStatus = data.response;
+
+                if (printerStatus.error) {
+                    statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> ${printerStatus.error}`;
+                } else {
+                    // Display both print status and temperature
+                    statusItem.innerHTML = `
+                        <strong>${printerId.replace('_', ' ').toUpperCase()}:</strong>
+                        <br><strong>Print Status:</strong> ${printerStatus.print_status}
+                        <br><strong>Hotend Temperature:</strong> ${printerStatus.hotend_temp || 'N/A'} °C
+                        <br><strong>Bed Temperature:</strong> ${printerStatus.bed_temp || 'N/A'} °C
+                    `;
+                }
+            }
+        })
+        .catch(error => {
+            const statusItem = document.getElementById(`status-${printerId}`);
+            statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> Error fetching status`;
+        });
+    }, 2000);  // Adding a delay before the next status fetch
+}
+
+// Function to update Control Panel for all printers
+function updateControlPanel() {
+    const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_4', 'prusa_mk2s_5']; // List of printer IDs
+    const controlPanelContainer = document.getElementById('control-panel-container');
+    controlPanelContainer.innerHTML = ''; // Clear previous content
+
+    printerIds.forEach(printerId => {
+        // Create a status card for each printer
+        const printerCard = document.createElement('div');
+        printerCard.classList.add('printer-card');
+        printerCard.id = `status-${printerId}`;
+        printerCard.innerHTML = `<h3>${printerId.replace('_', ' ').toUpperCase()}:</h3>Loading status...`;
+        controlPanelContainer.appendChild(printerCard);
+
+        // Fetch and display status
+        fetchPrinterStatus(printerId);
+    });
+}

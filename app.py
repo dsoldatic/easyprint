@@ -1,38 +1,48 @@
-from flask import Flask, render_template, request, jsonify
 import serial
 import time
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# Simulirani printeri - ovo možeš kasnije zamijeniti stvarnim serijskim ID-ovima na Raspberryju
+# Simulirani printeri - zamijeni s pravim ID-ovima za tvoje printere
 printers = {
     'prusa_mk2s_1': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65447-if00',
     'prusa_mk2s_4': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65440-if00'
 }
 
-# Funkcija za slanje G-code komandi printeru
-def send_gcode(printer_id, gcode_command):
+# Create a global variable to store the persistent serial connections
+printer_connections = {}
+
+# Function to establish a persistent connection to the printer
+def get_serial_connection(printer_id):
     serial_port = printers.get(printer_id)
     if serial_port:
+        if printer_id in printer_connections and printer_connections[printer_id].is_open:
+            return printer_connections[printer_id], None
         try:
-            # Otvaranje serijske veze s printerom
-            with serial.Serial(serial_port, 115200, timeout=5) as ser:
-                time.sleep(2)  # Dajemo printeru vremena da se pokrene
-                ser.write((gcode_command + '\n').encode())  # Šaljemo G-code
-                ser.flush()
-                return "G-code sent: " + gcode_command
-        except (serial.SerialException, OSError):
-            # Prijateljska poruka za slučaj problema s portom
-            return "Printer not found or disconnected"
+            # Open the connection only if it's not already open
+            ser = serial.Serial(serial_port, 115200, timeout=10)
+            time.sleep(2)  # Allow the printer time to initialize
+            printer_connections[printer_id] = ser
+        except (serial.SerialException, OSError) as e:
+            return None, str(e)
+    return printer_connections.get(printer_id), None
+
+
+# Function to send G-code command to the printer
+def send_gcode(printer_id, gcode_command):
+    ser, error = get_serial_connection(printer_id)
+    if ser:
+        try:
+            ser.write((gcode_command + '\n').encode())
+            ser.flush()
+            return f"G-code sent: {gcode_command}"
+        except (serial.SerialException, OSError) as e:
+            return f"Error sending G-code: {str(e)}"
     else:
-        return "Printer not found or disconnected"
+        return error or "Printer not found or disconnected"
 
-# Početna stranica
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-# API za upravljanje printerima
+# Route to handle G-code commands
 @app.route('/api/control', methods=['POST'])
 def control_printer():
     data = request.json
@@ -41,47 +51,59 @@ def control_printer():
     response = send_gcode(printer_id, gcode_command)
     return jsonify({'status': 'success', 'response': response})
 
-# Funkcija za dohvaćanje statusa ispisa (M27), temperature (M105) i krajnjih prekidača (M119)
-# Store open serial connections
-open_connections = {}
 
+# Početna stranica
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+# Funkcija za dohvaćanje statusa ispisa (M27), temperature (M105) i krajnjih prekidača (M119)
 def get_printer_status(printer_id):
     serial_port = printers.get(printer_id)
     if serial_port:
         try:
-            # Reuse the open connection if it exists
-            if printer_id not in open_connections:
-                open_connections[printer_id] = serial.Serial(serial_port, 115200, timeout=5)
-                time.sleep(2)  # Give the printer time to initialize
+            with serial.Serial(serial_port, 115200, timeout=10) as ser:  # Increase timeout
+                time.sleep(2)  # Allow the printer some time to initialize
 
-            ser = open_connections[printer_id]
+                # Retry mechanism
+                retries = 3
+                while retries > 0:
+                    # Fetch Print Status (M27)
+                    ser.write(b'M27\n')
+                    ser.flush()
+                    print_status_raw = ser.readline().decode('utf-8').strip()
 
-            # Fetch Print Status (M27)
-            ser.write(b'M27\n')
-            ser.flush()
-            print_status_raw = ser.readline().decode('utf-8').strip()
+                    # Fetch Temperature (M105)
+                    ser.write(b'M105\n')
+                    ser.flush()
+                    temp_status_raw = ser.readline().decode('utf-8').strip()
 
-            # Fetch Temperature (M105)
-            ser.write(b'M105\n')
-            ser.flush()
-            temp_status_raw = ser.readline().decode('utf-8').strip()
+                    # Parse temperature from the M105 response
+                    hotend_temp, bed_temp = None, None
+                    if "T:" in temp_status_raw:
+                        hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]  # Extract hotend temp
+                    if "B:" in temp_status_raw:
+                        bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]  # Extract bed temp
 
-            # Parse temperature from the M105 response
-            hotend_temp, bed_temp = None, None
-            if "T:" in temp_status_raw:
-                hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]
-            if "B:" in temp_status_raw:
-                bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]
+                    if hotend_temp and bed_temp:
+                        break  # If we get valid data, stop retrying
 
-            # Clean print status
-            print_status = "Not SD printing" if "Not SD printing" in print_status_raw else "Printing"
+                    retries -= 1
+                    time.sleep(1)  # Short delay before retrying
 
-            # Return parsed status information
-            return {
-                'print_status': print_status,
-                'hotend_temp': hotend_temp if hotend_temp else "N/A",
-                'bed_temp': bed_temp if bed_temp else "N/A"
-            }
+                # Clean print status (Extract relevant part)
+                if "SD printing" in print_status_raw:
+                    print_status = "Printing"
+                else:
+                    print_status = "Not SD printing"
+
+                # Return parsed status information
+                return {
+                    'print_status': print_status,
+                    'hotend_temp': hotend_temp if hotend_temp else "N/A",
+                    'bed_temp': bed_temp if bed_temp else "N/A"
+                }
 
         except (serial.SerialException, OSError):
             return {'error': "Printer not found or disconnected"}

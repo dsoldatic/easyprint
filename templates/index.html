@@ -117,15 +117,16 @@
     <!-- Tab za Home (Početni) -->
     <div id="Home" class="tabcontent">
         <!-- Vraćanje gumba za odabir printera -->
-        <label for="printer-select">Select Printer:</label>
+      <!--   <label for="printer-select">Select Printer:</label>
         <select id="printer-select">
+            <option value="" selected disabled>Select a printer</option>
             <option value="prusa_mk2s_1">Prusa MK2S 1</option>
             <option value="prusa_mk2s_4">Prusa MK2S 4</option>
-            
         </select>
+        -->
      
     <!-- Multi-Printer Management -->
-<label for="multi-printer-toggle">Enable Multi-Printer Management:</label>
+<label for="multi-printer-toggle">Printer Management (printer list):</label>
 <input type="checkbox" id="multi-printer-toggle" onchange="toggleMultiPrinter()">
 
  <!-- Checkboxes for multi-printer selection -->
@@ -371,17 +372,18 @@
         });
     }
 
-        // Funkcija za dodavanje notifikacije
-        function addNotification(printerId, message) {
-            const notificationList = document.getElementById('notification-list');
-            const notification = document.createElement('div');
+// Function for adding notifications
+function addNotification(printerId, message) {
+    const notificationList = document.getElementById('notification-list');
+    const notification = document.createElement('div');
 
-            const now = new Date();
-            const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+    const now = new Date();
+    const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
 
-            notification.textContent = `${dateTime} - Printer: ${printerId} - ${message}`;
-            notificationList.appendChild(notification);
-        }
+    notification.textContent = `${dateTime} - Printer: ${printerId} - ${message}`;
+    notificationList.appendChild(notification);
+}
+
 
  // Funkcija za dohvaćanje datoteka sa SD kartice
 function loadSdFiles() {
@@ -651,6 +653,7 @@ function toggleMultiPrinter() {
     }
 }
 
+
 // Get selected printers from checkboxes or dropdown
 function getSelectedPrinters() {
     const isMultiPrinterEnabled = document.getElementById('multi-printer-toggle').checked;
@@ -665,6 +668,7 @@ function getSelectedPrinters() {
         return [document.getElementById('printer-select').value];
     }
 }
+
 
 // Update and show statuses for selected printers
 function updatePrinterStatuses() {
