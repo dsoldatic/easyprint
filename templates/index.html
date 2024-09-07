@@ -122,6 +122,16 @@
             <option value="" selected disabled>Select a printer</option>
             <option value="prusa_mk2s_1">Prusa MK2S 1</option>
             <option value="prusa_mk2s_4">Prusa MK2S 4</option>
+            <option value="prusa_mk2s_2">Prusa MK2S 2</option>
+            <option value="prusa_mk2s_3">Prusa MK2S 3</option>
+            <option value="prusa_mk2s_5">Prusa MK2S 5</option>
+            <option value="prusa_mk2s_6">Prusa MK2S 6</option>
+            <option value="prusa_mk2s_7">Prusa MK2S 7</option>
+            <option value="prusa_mk2s_8">Prusa MK2S 8</option>
+            <option value="prusa_mk2s_9">Prusa MK2S 9</option>
+            <option value="prusa_mk2s_10">Prusa MK2S 10</option>
+
+            
         </select>
         -->
      
@@ -136,6 +146,14 @@
         <label for="printer_mk2s_1">Prusa MK2S 1</label>
     </div>
     <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_2" value="prusa_mk2s_2">
+        <label for="printer_mk2s_2">Prusa MK2S 2</label>
+    </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_3" value="prusa_mk2s_3">
+        <label for="printer_mk2s_3">Prusa MK2S 3</label>
+    </div>
+    <div class="checkbox-item">
         <input type="checkbox" id="printer_mk2s_4" value="prusa_mk2s_4">
         <label for="printer_mk2s_4">Prusa MK2S 4</label>
     </div>
@@ -143,6 +161,26 @@
         <input type="checkbox" id="printer_mk2s_5" value="prusa_mk2s_5">
         <label for="printer_mk2s_5">Prusa MK2S 5</label>
     </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_6" value="prusa_mk2s_6">
+        <label for="printer_mk2s_6">Prusa MK2S 6</label>
+    </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_7" value="prusa_mk2s_7">
+        <label for="printer_mk2s_7">Prusa MK2S 7</label>
+    </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_8" value="prusa_mk2s_8">
+        <label for="printer_mk2s_8">Prusa MK2S 8</label>
+    </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_9" value="prusa_mk2s_9">
+        <label for="printer_mk2s_9">Prusa MK2S 9</label>
+    </div>
+    <div class="checkbox-item">
+        <input type="checkbox" id="printer_mk2s_10" value="prusa_mk2s_10">
+        <label for="printer_mk2s_10">Prusa MK2S 10</label>
+    </div>    
 </div>  
         
   <!-- Status Section for Multi-Printers -->
@@ -186,9 +224,283 @@
 <div id="ControlPanel" class="tabcontent">
     <h2>Control Panel</h2>
     <div id="control-panel-container" class="control-panel-grid">
-        <!-- Printer status cards will be injected here -->
+        <!-- Printer 1 card -->
+        <div class="printer-card">
+            <h3>PRUSA MK2S_1</h3>
+            <div class="printer-status" id="status-prusa_mk2s_1">
+                <p>Print Status: Loading...</p>
+                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+            </div>
+            <!-- Preheat/Cooldown buttons -->
+            <div class="control-column">
+                <button onclick="preheat('prusa_mk2s_1', 'PLA')">Preheat PLA</button>
+                <button onclick="cooldown('prusa_mk2s_1')">Cooldown</button>
+            </div>
+
+            <!-- File upload and print controls -->
+            <div class="control-column">
+                <input type="file" id="file-input-prusa_mk2s_1" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_1')"/>
+                <label for="file-input-prusa_mk2s_1" style="cursor: pointer;">Choose File (.gcode)</label>
+                <span id="file-name-display-prusa_mk2s_1">No file selected</span>
+                <button onclick="startPrint('prusa_mk2s_1')">Start Print</button>
+                <button onclick="pausePrint('prusa_mk2s_1')">Pause Print</button>
+                <button onclick="resumePrint('prusa_mk2s_1')">Resume Print</button>
+                <button onclick="cancelPrint('prusa_mk2s_1')">Cancel Print</button>
+            </div>
+
+<!-- Load/Unload Filament with message -->
+<div class="control-column">
+    <button id="load-filament-prusa_mk2s_1" onclick="loadFilament('prusa_mk2s_1')" disabled>Load Filament</button>
+    <button id="unload-filament-prusa_mk2s_1" onclick="unloadFilament('prusa_mk2s_1')" disabled>Unload Filament</button>
+    <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+</div>
+</div>
+
+<!-- Printer 2 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_2</h3>
+    <div class="printer-status" id="status-prusa_mk2s_2">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_2', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_2')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_2" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_2')"/>
+        <label for="file-input-prusa_mk2s_2" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_2">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_2')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_2')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_2')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_2')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_2" onclick="loadFilament('prusa_mk2s_2')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_2" onclick="unloadFilament('prusa_mk2s_2')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
     </div>
 </div>
+
+<!-- Printer 3 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_3</h3>
+    <div class="printer-status" id="status-prusa_mk2s_3">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_3', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_3')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_3" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_3')"/>
+        <label for="file-input-prusa_mk2s_3" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_3">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_3')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_3')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_3')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_3')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_3" onclick="loadFilament('prusa_mk2s_3')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_3" onclick="unloadFilament('prusa_mk2s_3')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 4 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_4</h3>
+    <div class="printer-status" id="status-prusa_mk2s_4">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_4', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_4')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_4" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_4')"/>
+        <label for="file-input-prusa_mk2s_4" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_4">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_4')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_4')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_4')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_4')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_4" onclick="loadFilament('prusa_mk2s_4')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_4" onclick="unloadFilament('prusa_mk2s_4')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 5 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_5</h3>
+    <div class="printer-status" id="status-prusa_mk2s_5">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_5', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_5')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_5" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_5')"/>
+        <label for="file-input-prusa_mk2s_5" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_5">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_5')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_5')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_5')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_5')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_5" onclick="loadFilament('prusa_mk2s_5')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_5" onclick="unloadFilament('prusa_mk2s_5')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 6 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_6</h3>
+    <div class="printer-status" id="status-prusa_mk2s_6">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_6', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_6')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_6" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_6')"/>
+        <label for="file-input-prusa_mk2s_6" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_6">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_6')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_6')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_6')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_6')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_6" onclick="loadFilament('prusa_mk2s_6')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_6" onclick="unloadFilament('prusa_mk2s_6')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 7 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_7</h3>
+    <div class="printer-status" id="status-prusa_mk2s_7">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_7', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_7')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_7" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_7')"/>
+        <label for="file-input-prusa_mk2s_7" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_7">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_7')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_7')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_7')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_7')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_7" onclick="loadFilament('prusa_mk2s_7')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_7" onclick="unloadFilament('prusa_mk2s_7')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 8 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_8</h3>
+    <div class="printer-status" id="status-prusa_mk2s_8">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_8', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_8')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_8" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_8')"/>
+        <label for="file-input-prusa_mk2s_8" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_8">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_8')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_8')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_8')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_8')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_8" onclick="loadFilament('prusa_mk2s_8')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_8" onclick="unloadFilament('prusa_mk2s_8')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 9 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_9</h3>
+    <div class="printer-status" id="status-prusa_mk2s_9">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_9', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_9')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_9" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_9')"/>
+        <label for="file-input-prusa_mk2s_9" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_9">No file selected</span>
+        <button onclick="startPrint('pr        usa_mk2s_9')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_9')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_9')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_9')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_9" onclick="loadFilament('prusa_mk2s_9')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_9" onclick="unloadFilament('prusa_mk2s_9')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+
+<!-- Printer 10 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_10</h3>
+    <div class="printer-status" id="status-prusa_mk2s_10">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-column">
+        <button onclick="preheat('prusa_mk2s_10', 'PLA')">Preheat PLA</button>
+        <button onclick="cooldown('prusa_mk2s_10')">Cooldown</button>
+    </div>
+    <div class="control-column">
+        <input type="file" id="file-input-prusa_mk2s_10" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_10')"/>
+        <label for="file-input-prusa_mk2s_10" style="cursor: pointer;">Choose File (.gcode)</label>
+        <span id="file-name-display-prusa_mk2s_10">No file selected</span>
+        <button onclick="startPrint('prusa_mk2s_10')">Start Print</button>
+        <button onclick="pausePrint('prusa_mk2s_10')">Pause Print</button>
+        <button onclick="resumePrint('prusa_mk2s_10')">Resume Print</button>
+        <button onclick="cancelPrint('prusa_mk2s_10')">Cancel Print</button>
+    </div>
+    <div class="control-column">
+        <button id="load-filament-prusa_mk2s_10" onclick="loadFilament('prusa_mk2s_10')" disabled>Load Filament</button>
+        <button id="unload-filament-prusa_mk2s_10" onclick="unloadFilament('prusa_mk2s_10')" disabled>Unload Filament</button>
+        <p><small>The hotend nozzle must be over 200°C to enable these buttons.</small></p>
+    </div>
+</div>
+</div>
+</div>
+
 
     <!-- Tab za Settings -->
     <div id="Settings" class="tabcontent">
@@ -335,10 +647,6 @@
         function closeNotifications() {
             document.getElementById('notificationModal').style.display = 'none';
         }
-    // Funkcija za otvaranje notifikacijskog modala
-    function openNotifications() {
-            document.getElementById('notificationModal').style.display = 'block';
-        }
 
         // Postavi početni tab kao default (otvori Home tab pri učitavanju)
         document.getElementById("defaultOpen").click();
@@ -384,6 +692,36 @@ function addNotification(printerId, message) {
     notificationList.appendChild(notification);
 }
 
+function handleFileSelect(printerId) {
+    const fileInput = document.getElementById(`file-input-${printerId}`);
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('No file selected.');
+        return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch(`/api/upload_gcode/${printerId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById(`file-name-display-${printerId}`).textContent = data.file_name;
+            addNotification(printerId, `File "${data.file_name}" uploaded successfully.`);
+        } else {
+            alert(`Upload failed: ${data.message}`);
+            addNotification(printerId, `Failed to upload file: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error uploading file:', error);
+        alert('Error uploading file.');
+        addNotification(printerId, 'Error uploading file.');
+    });
+}
 
  // Funkcija za dohvaćanje datoteka sa SD kartice
 function loadSdFiles() {
@@ -694,6 +1032,8 @@ function updatePrinterStatuses() {
     });
 }
 
+
+/*
 // Fetch printer status from API
 function fetchPrinterStatus(printerId) {
     fetch('/api/status', {
@@ -724,7 +1064,7 @@ function fetchPrinterStatus(printerId) {
         const statusItem = document.getElementById(`status-${printerId}`);
         statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> Printer not found or disconnected`;
     });
-}
+}*/
 
 // Ensure statuses are updated when toggling multi-printer mode
 document.getElementById('multi-printer-toggle').addEventListener('change', toggleMultiPrinter);

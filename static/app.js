@@ -52,46 +52,54 @@ function pausePrint() {
     addNotification(printerId, 'Print paused');
 }
 
-// Funkcija za dohvaćanje temperature hotenda i omogućavanje kontrole filamenta
+// Function to check the hotend temperature and enable/disable filament buttons
 function checkHotendTemperature() {
-    const printerId = getSelectedPrinter();
+    const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_2', 'prusa_mk2s_3', 'prusa_mk2s_4', 'prusa_mk2s_5', 'prusa_mk2s_6', 'prusa_mk2s_7', 'prusa_mk2s_8', 'prusa_mk2s_9', 'prusa_mk2s_10'];
 
-    fetch('/api/status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ printer_id: printerId }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        const loadFilamentBtn = document.getElementById('load-filament-btn');
-        const unloadFilamentBtn = document.getElementById('unload-filament-btn');
+    printerIds.forEach(printerId => {
+        fetch('/api/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ printer_id: printerId }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const loadFilamentBtn = document.getElementById(`load-filament-${printerId}`);
+            const unloadFilamentBtn = document.getElementById(`unload-filament-${printerId}`);
+            const messageElement = document.getElementById(`filament-message-${printerId}`);
 
-        if (data.status === 'success' && data.response.hotend_temp !== null) {
-            const hotendTemp = data.response.hotend_temp;
-            
-            // Check if the hotend temperature is at least 215°C
-            if (hotendTemp >= 215) {
-                loadFilamentBtn.disabled = false;
-                unloadFilamentBtn.disabled = false;
+            if (data.status === 'success' && data.response.hotend_temp !== null) {
+                const hotendTemp = data.response.hotend_temp;
+
+                // Check if the hotend temperature is at least 200°C
+                if (hotendTemp >= 200) {
+                    loadFilamentBtn.disabled = false;
+                    unloadFilamentBtn.disabled = false;
+                    messageElement.style.display = 'none';  // Hide the message when buttons are enabled
+                } else {
+                    loadFilamentBtn.disabled = true;
+                    unloadFilamentBtn.disabled = true;
+                    messageElement.style.display = 'block';  // Show the message when buttons are disabled
+                }
             } else {
                 loadFilamentBtn.disabled = true;
                 unloadFilamentBtn.disabled = true;
+                messageElement.style.display = 'block';  // Show the message when there's an error
             }
-        } else {
-            loadFilamentBtn.disabled = true;
-            unloadFilamentBtn.disabled = true;
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching temperature:', error);
-        document.getElementById('printer-status').textContent = `Status: Error fetching status.`;
+            messageElement.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error fetching temperature:', error);
+            document.getElementById('printer-status').textContent = 'Status: Error fetching status.';
+        });
     });
 }
 
-// Poziva se svakih 5 sekundi kako bi provjerili temperaturu hotenda
-setInterval(checkHotendTemperature, 1000);
+// Periodically check temperature for all printers every 5 seconds
+setInterval(checkHotendTemperature, 5000);
+
 
 // Funkcija za učitavanje filamenta
 function loadFilament() {
@@ -240,18 +248,6 @@ function updateStatusDisplay(printerId, status) {
     `;
 }
 
-// Function to apply cooldown settings to all selected printers
-function cooldown() {
-    const printerIds = getSelectedPrinters(); // Get selected printers (single or multiple)
-
-    // Send cooldown G-code to all selected printers
-    printerIds.forEach(printerId => {
-        sendGcode(printerId, 'M104 S0');  // Turn off hotend
-        sendGcode(printerId, 'M140 S0');  // Turn off bed
-        addNotification(printerId, 'Cooldown initiated (Hotend: 0°C, Bed: 0°C)');
-    });
-}
-
 
 // Funkcija za cooldown
 function cooldown() {
@@ -278,9 +274,9 @@ function addNotification(printerId, message) {
     notificationList.appendChild(notification);
 }
 
-// Automatski dohvaćaj status printera svakih 0.5 sekundi
-setInterval(getPrinterStatus, 500);
-
+// Automatski dohvaćaj status printera svakih 5 sekundi
+setInterval(getPrinterStatus, 5000);
+/*
  // Function to fetch printer status and update the Control Panel
  function updateControlPanel() {
     const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_4', 'prusa_mk2s_5']; // Add your printer IDs here
@@ -331,62 +327,225 @@ setInterval(getPrinterStatus, 500);
             `;
         });
     });
-}
-
+}// Continuously refresh the control panel every 1000ms (1 second)
+setInterval(updateControlPanel, 5000);
+*/
 // Ensure Control Panel updates when the tab is clicked
 document.querySelector('.tablinks[onclick="openTab(event, \'ControlPanel\')"]').addEventListener('click', updateControlPanel);
 
-// Fetch printer status from API with delay before fetching next status
-function fetchPrinterStatus(printerId) {
-    setTimeout(() => {
-        fetch('/api/status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ printer_id: printerId }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            const statusItem = document.getElementById(`status-${printerId}`);
-            if (data.status === 'success') {
-                const printerStatus = data.response;
+document.addEventListener('DOMContentLoaded', () => {
+    updateControlPanel();
+});
 
-                if (printerStatus.error) {
-                    statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> ${printerStatus.error}`;
-                } else {
-                    // Display both print status and temperature
-                    statusItem.innerHTML = `
-                        <strong>${printerId.replace('_', ' ').toUpperCase()}:</strong>
-                        <br><strong>Print Status:</strong> ${printerStatus.print_status}
-                        <br><strong>Hotend Temperature:</strong> ${printerStatus.hotend_temp || 'N/A'} °C
-                        <br><strong>Bed Temperature:</strong> ${printerStatus.bed_temp || 'N/A'} °C
-                    `;
-                }
-            }
-        })
-        .catch(error => {
-            const statusItem = document.getElementById(`status-${printerId}`);
-            statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> Error fetching status`;
-        });
-    }, 2000);  // Adding a delay before the next status fetch
-}
-
-// Function to update Control Panel for all printers
+// Fetch and display the printer status in each card
 function updateControlPanel() {
-    const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_4', 'prusa_mk2s_5']; // List of printer IDs
+    const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_2', 'prusa_mk2s_3', 'prusa_mk2s_4', 'prusa_mk2s_5', 'prusa_mk2s_6', 'prusa_mk2s_7', 'prusa_mk2s_8', 'prusa_mk2s_9', 'prusa_mk2s_10'];
+    
     const controlPanelContainer = document.getElementById('control-panel-container');
-    controlPanelContainer.innerHTML = ''; // Clear previous content
+    controlPanelContainer.innerHTML = '';  // Clear any existing content
 
     printerIds.forEach(printerId => {
-        // Create a status card for each printer
+        // Create a card for each printer
         const printerCard = document.createElement('div');
         printerCard.classList.add('printer-card');
-        printerCard.id = `status-${printerId}`;
-        printerCard.innerHTML = `<h3>${printerId.replace('_', ' ').toUpperCase()}:</h3>Loading status...`;
+        printerCard.innerHTML = `
+            <!-- Top section for printer status -->
+            <div class="printer-status" id="status-${printerId}">
+                <h3>${printerId.replace('_', ' ').toUpperCase()}</h3>
+                <p>Status: Loading...</p>
+                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+            </div>
+
+            <!-- Bottom section with three columns -->
+            <div class="printer-controls-grid">
+                <div class="control-column">
+                    <h4>Preheat/Cooldown</h4>
+                    <button onclick="preheat('${printerId}', 'PLA')">Preheat PLA</button>
+                    <button onclick="preheat('${printerId}', 'ABS')">Preheat ABS</button>
+                    <button onclick="preheat('${printerId}', 'PET')">Preheat PET</button>
+                    <button onclick="cooldown('${printerId}')">Cooldown</button>
+                </div>
+
+                <div class="control-column">
+                    <h4>Printing</h4>
+   <!-- Hidden file input -->
+    <input type="file" id="file-input-${printerId}" accept=".gcode" style="display:none" onchange="handleFileSelect('${printerId}')"/>
+    
+    <!-- Label styled as a button -->
+    <label for="file-input-${printerId}" class="choose-file-button">Choose File (.gcode)</label>
+    
+    <!-- Display the selected file name -->
+    <span id="file-name-display-${printerId}">${selectedFileNames[printerId] || 'No file selected'}</span>
+    
+    <!-- Print controls -->
+    <button onclick="startPrint('${printerId}')" disabled id="start-print-${printerId}">Start Print</button>
+    <button onclick="pausePrint('${printerId}')">Pause Print</button>
+    <button onclick="resumePrint('${printerId}')">Resume Print</button>
+    <button onclick="cancelPrint('${printerId}')">Cancel Print</button>
+ <p style="margin-bottom: 40px;"><small><em>To enable Start Print button, select a file.</em></small></p> <!-- Instruction added -->
+                </div>
+ <! <!-- Third column for Filament Controls and Message -->
+                <div class="control-column">
+                    <h4>Filament Controls</h4>
+                    <button id="load-filament-${printerId}" onclick="loadFilament('${printerId}')" disabled>Load Filament</button>
+                    <button id="unload-filament-${printerId}" onclick="unloadFilament('${printerId}')" disabled>Unload Filament</button>
+                    <p id="filament-message-${printerId}">
+                     <small>The hotend nozzle must be over 200°C to enable these buttons.</small>
+                    </p>                
+    </div>
+            </div>
+        `;
         controlPanelContainer.appendChild(printerCard);
 
-        // Fetch and display status
+        // Fetch and update the printer status
         fetchPrinterStatus(printerId);
     });
+}
+
+
+let selectedFileNames = {};  // Globalna varijabla za pohranu odabranih fajlova po printeru
+
+// Funkcija za rukovanje odabirom fajla
+function handleFileSelect(printerId) {
+    const fileInput = document.getElementById(`file-input-${printerId}`);
+    const fileNameDisplay = document.getElementById(`file-name-display-${printerId}`);
+    const startPrintButton = document.getElementById(`start-print-${printerId}`);
+    const file = fileInput.files[0];
+
+    if (file) {
+        // Provjera je li odabrani fajl .gcode
+        if (file.name.endsWith('.gcode')) {
+            selectedFileNames[printerId] = file.name;  // Pohrani naziv fajla za svaki printer
+            fileNameDisplay.textContent = file.name;  // Prikazuj ime fajla u UI
+            startPrintButton.disabled = false;  // Omogući dugme za pokretanje printanja
+        } else {
+            fileNameDisplay.textContent = 'Invalid file. Please select a .gcode file.';
+            startPrintButton.disabled = true;  // Onemogući dugme ako fajl nije validan
+        }
+    }
+}
+
+
+// Function to start the print after uploading the file
+function startPrint(printerId) {
+    const selectedFile = document.getElementById(`file-name-display-${printerId}`).textContent;
+    if (selectedFile === 'No file selected') {
+        alert('Please select a file first.');
+        return;
+    }
+
+    sendGcode([printerId], `M23 ${selectedFile}`);
+    sendGcode([printerId], 'M24');
+    addNotification(printerId, `Print started for file: ${selectedFile}`);
+}
+
+
+// Function to fetch printer status and update the UI, including enabling/disabling filament buttons
+function fetchPrinterStatus(printerId) {
+    fetch('/api/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ printer_id: printerId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        const statusElement = document.getElementById(`status-${printerId}`);
+        const loadFilamentBtn = document.getElementById(`load-filament-${printerId}`);
+        const unloadFilamentBtn = document.getElementById(`unload-filament-${printerId}`);
+
+        if (data.status === 'success') {
+            const printerStatus = data.response;
+            const hotendTemp = printerStatus.hotend_temp || 'N/A';
+
+            statusElement.innerHTML = `
+                <h3>${printerId.replace('_', ' ').toUpperCase()}</h3>
+                <p>Print Status: ${printerStatus.print_status || 'N/A'}</p>
+                <p>Hotend Temp: ${hotendTemp} °C | Bed Temp: ${printerStatus.bed_temp || 'N/A'} °C</p>
+            `;
+
+            // Enable/disable Load/Unload filament buttons based on hotend temperature
+            if (hotendTemp !== 'N/A' && parseFloat(hotendTemp) > 200) {
+                loadFilamentBtn.disabled = false;
+                unloadFilamentBtn.disabled = false;
+            } else {
+                loadFilamentBtn.disabled = true;
+                unloadFilamentBtn.disabled = true;
+            }
+        } else {
+            statusElement.innerHTML = `<p>Printer not found or disconnected</p>`;
+            loadFilamentBtn.disabled = true;
+            unloadFilamentBtn.disabled = true;
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching printer status:', error);
+        const statusElement = document.getElementById(`status-${printerId}`);
+        statusElement.innerHTML = `<p>Error fetching status</p>`;
+        document.getElementById(`load-filament-${printerId}`).disabled = true;
+        document.getElementById(`unload-filament-${printerId}`).disabled = true;
+    });
+}
+
+// Periodically monitor printer status every 5 seconds
+setInterval(() => {
+    printerIds.forEach(printerId => {
+        fetchPrinterStatus(printerId); // Proveri status za svaki printer u listi
+    });
+}, 5000);
+
+
+
+// Example of sending a preheat command to a specific printer
+function preheat(printerId, material) {
+    let hotendTemp, bedTemp;
+    if (material === 'PLA') {
+        hotendTemp = 215;
+        bedTemp = 60;
+    } else if (material === 'ABS') {
+        hotendTemp = 240;
+        bedTemp = 100;
+    } else if (material === 'PET') {
+        hotendTemp = 230;
+        bedTemp = 90;
+    }
+
+    sendGcode(printerId, `M104 S${hotendTemp}`);  // Set hotend temp
+    sendGcode(printerId, `M140 S${bedTemp}`);     // Set bed temp
+}
+
+function cooldown(printerId) {
+    sendGcode(printerId, 'M104 S0');  // Turn off hotend
+    sendGcode(printerId, 'M140 S0');  // Turn off bed
+}
+
+function pausePrint(printerId) {
+    sendGcode(printerId, 'M25');  // Pause print
+}
+
+function resumePrint(printerId) {
+    sendGcode(printerId, 'M24');  // Resume print
+}
+
+function cancelPrint(printerId) {
+    sendGcode(printerId, 'M26');  // Cancel print
+}
+
+function loadFilament(printerId) {
+    sendGcode(printerId, 'M701');  // Load filament
+}
+
+function unloadFilament(printerId) {
+    sendGcode(printerId, 'M702');  // Unload filament
+}
+
+// Function to send G-code to a specific printer
+function sendGcode(printerId, gcode) {
+    fetch('/api/control', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ printer_id: printerId, gcode_command: gcode })
+    })
+    .then(response => response.json())
+    .then(data => console.log(`G-code sent to ${printerId}: ${gcode}`, data))
+    .catch(error => console.error(`Error sending G-code to ${printerId}:`, error));
 }

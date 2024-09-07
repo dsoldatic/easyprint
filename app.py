@@ -1,13 +1,29 @@
 import serial
+import os
 import time
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
+# Directory where the G-code files will be saved
+UPLOAD_FOLDER = '/Users/davidsoldatic/EasyPrint/easyprint-1/gcode_files'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 # Simulirani printeri - zamijeni s pravim ID-ovima za tvoje printere
 printers = {
     'prusa_mk2s_1': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65447-if00',
-    'prusa_mk2s_4': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65440-if00'
+    'prusa_mk2s_4': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65440-if00',
+    'prusa_mk2s_2': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_3': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_5': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_6': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_7': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_8': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_9': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_10': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_'    
 }
 
 # Create a global variable to store the persistent serial connections
@@ -51,6 +67,23 @@ def control_printer():
     response = send_gcode(printer_id, gcode_command)
     return jsonify({'status': 'success', 'response': response})
 
+# Route to upload and save G-code file
+@app.route('/api/upload_gcode/<printer_id>', methods=['POST'])
+def upload_gcode(printer_id):
+    if 'file' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No file provided'}), 400
+
+    file = request.files['file']
+    if file.filename == '' or not file.filename.lower().endswith('.gcode'):
+        return jsonify({'status': 'error', 'message': 'Invalid file format'}), 400
+
+
+    # Save the file to the upload folder
+    filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(filename)
+
+    # After saving, we can return the filename and proceed to send G-code to the printer
+    return jsonify({'status': 'success', 'file_name': file.filename})
 
 # Početna stranica
 @app.route('/')
@@ -60,55 +93,52 @@ def index():
 
 # Funkcija za dohvaćanje statusa ispisa (M27), temperature (M105) i krajnjih prekidača (M119)
 def get_printer_status(printer_id):
-    serial_port = printers.get(printer_id)
-    if serial_port:
+    ser, error = get_serial_connection(printer_id)
+    if ser:
         try:
-            with serial.Serial(serial_port, 115200, timeout=10) as ser:  # Increase timeout
-                time.sleep(2)  # Allow the printer some time to initialize
+            # Fetch Print Status (M27)
+            ser.write(b'M27\n')
+            ser.flush()
+            print_status_raw = ser.readline().decode('utf-8').strip()
 
-                # Retry mechanism
-                retries = 3
-                while retries > 0:
-                    # Fetch Print Status (M27)
-                    ser.write(b'M27\n')
-                    ser.flush()
-                    print_status_raw = ser.readline().decode('utf-8').strip()
+            # Fetch Temperature (M105)
+            ser.write(b'M105\n')
+            ser.flush()
+            temp_status_raw = ser.readline().decode('utf-8').strip()
 
-                    # Fetch Temperature (M105)
-                    ser.write(b'M105\n')
-                    ser.flush()
-                    temp_status_raw = ser.readline().decode('utf-8').strip()
+            # Fetch Endstop Status (M119)
+            ser.write(b'M119\n')
+            ser.flush()
+            endstop_status_raw = ser.readline().decode('utf-8').strip()
 
-                    # Parse temperature from the M105 response
-                    hotend_temp, bed_temp = None, None
-                    if "T:" in temp_status_raw:
-                        hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]  # Extract hotend temp
-                    if "B:" in temp_status_raw:
-                        bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]  # Extract bed temp
+            # Parse temperature from the M105 response
+            hotend_temp, bed_temp = None, None
+            if "T:" in temp_status_raw:
+                hotend_temp = temp_status_raw.split("T:")[1].split(" ")[0]  # Extract hotend temp
+            if "B:" in temp_status_raw:
+                bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]  # Extract bed temp
 
-                    if hotend_temp and bed_temp:
-                        break  # If we get valid data, stop retrying
+            # Parse endstop status
+            endstop_status = endstop_status_raw if endstop_status_raw else "N/A"
 
-                    retries -= 1
-                    time.sleep(1)  # Short delay before retrying
+            # Clean print status (Extract relevant part)
+            if "SD printing" in print_status_raw:
+                print_status = "Printing"
+            else:
+                print_status = "Not SD printing"
 
-                # Clean print status (Extract relevant part)
-                if "SD printing" in print_status_raw:
-                    print_status = "Printing"
-                else:
-                    print_status = "Not SD printing"
+            # Return parsed status information
+            return {
+                'print_status': print_status,
+                'hotend_temp': hotend_temp if hotend_temp else "N/A",
+                'bed_temp': bed_temp if bed_temp else "N/A",
+                'endstop_status': endstop_status
+            }
 
-                # Return parsed status information
-                return {
-                    'print_status': print_status,
-                    'hotend_temp': hotend_temp if hotend_temp else "N/A",
-                    'bed_temp': bed_temp if bed_temp else "N/A"
-                }
-
-        except (serial.SerialException, OSError):
-            return {'error': "Printer not found or disconnected"}
+        except (serial.SerialException, OSError) as e:
+            return {'error': f"Error fetching status: {str(e)}"}
     else:
-        return {'error': "Printer not found or disconnected"}
+        return {'error': error or "Printer not found or disconnected"}
 
 
 @app.route('/api/status', methods=['POST'])
