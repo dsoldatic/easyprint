@@ -135,10 +135,25 @@ function setFanSpeed() {
     addNotification(printerId, 'Fan speed set');
 }
 
-// Funkcija za pomicanje osi
-function moveAxis(axis) {
-    const printerId = document.getElementById('printer-select').value;
-    sendGcode(printerId, `G1 ${axis.toUpperCase()}10 F3000`);
+// Function to move the axis for a specific printer
+function moveAxis(printerId, axis, direction) {
+    let gcodeCommand;
+
+    // Define movement based on axis and direction
+    switch (axis) {
+        case 'x':
+            gcodeCommand = direction === 'left' ? 'G1 X-10 F3000' : 'G1 X10 F3000';
+            break;
+        case 'y':
+            gcodeCommand = direction === 'back' ? 'G1 Y-10 F3000' : 'G1 Y10 F3000';
+            break;
+        case 'z':
+            gcodeCommand = direction === 'down' ? 'G1 Z-10 F3000' : 'G1 Z10 F3000';
+            break;
+    }
+
+    // Send the G-code to the corresponding printer
+    sendGcode(printerId, gcodeCommand);
 }
 
 // Function to generate calibration cards for each printer

@@ -199,7 +199,7 @@
         <h3>Cooldown</h3>
         <button onclick="cooldown()">Cooldown (Hotend 0°C / Bed 0°C)</button>
 
-        <h3>SD Card Files</h3>
+     <h3>SD Card Files</h3>
 <select id="sd-file-select" disabled>
     <option value="">Select a file from SD card</option>
 </select>
@@ -502,104 +502,253 @@
 </div>
 
 
-    <!-- Tab za Settings -->
-    <div id="Settings" class="tabcontent">
-        <h3>Settings</h3>
+<!-- Settings Tab -->
+<div id="Settings" class="tabcontent">
+    <h2>Printer Controls - XYZ and Auto Home</h2>
+    <div class="printer-grid">
+        <!-- Printer 1 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 1</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_1', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_1', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_1')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_1', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_1', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_1', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_1', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
 
-        <div>
-            <label for="nozzle-temp">Nozzle Temperature (0°C - 260°C):</label>
-            <input type="range" id="nozzle-temp" min="0" max="260" step="1" value="0" oninput="updateNozzleTempLabel(this.value)" />
-            <span id="nozzle-temp-value">0°C</span> <!-- Display the selected value -->
+        <!-- Printer 2 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 2</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_2', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_2', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_2')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_2', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_2', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_2', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_2', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
         </div>
-        
-        <div>
-            <label for="bed-temp">Bed Temperature (0°C - 100°C):</label>
-            <input type="range" id="bed-temp" min="0" max="100" step="1" value="0" oninput="updateBedTempLabel(this.value)" />
-            <span id="bed-temp-value">0°C</span> <!-- Display the selected value -->
-        </div>
-        
-        <button onclick="setSettings()">Set Settings</button>
-        
-        <div>
-            <label for="fan-speed">Fan Speed (0% - 100%):</label>
-            <input type="range" id="fan-speed" min="0" max="100" step="1" value="0" oninput="updateFanSpeedLabel(this.value)" />
-            <span id="fan-speed-value">0%</span> <!-- Display the selected value -->
-        </div>
-        
-        <button onclick="setFanSpeed()">Set Fan Speed</button>
-        
-        <h3>Move Axis</h3>
-        <!-- Movement Controls with Arrows -->
-        <div>
-            <button onclick="moveAxis('x', 'left')">⬅️ Move X-</button>
-            <button onclick="moveAxis('x', 'right')">➡️ Move X+</button>
-        </div>
-        <div>
-            <button onclick="moveAxis('y', 'back')">⬅️ Move Y-</button>
-            <button onclick="moveAxis('y', 'front')">➡️ Move Y+</button>
-        </div>
-        <div>
-            <button onclick="moveAxis('z', 'down')">⬇️ Move Z-</button>
-            <button onclick="moveAxis('z', 'up')">⬆️ Move Z+</button>
-        </div>
-    </div>    
-        
-        <!-- Add Scripts for Updating Values in Real-Time -->
-        <script>
-            function updateNozzleTempLabel(value) {
-                document.getElementById('nozzle-temp-value').textContent = value + "°C";
-            }
-        
-            function updateBedTempLabel(value) {
-                document.getElementById('bed-temp-value').textContent = value + "°C";
-            }
-        
-            function updateFanSpeedLabel(value) {
-                document.getElementById('fan-speed-value').textContent = value + "%";
-            }
-        
-            // Modify the moveAxis function to handle direction
-            function moveAxis(axis, direction) {
-                const printerId = getSelectedPrinter();
-                let gcodeCommand;
-        
-                switch (axis) {
-                    case 'x':
-                        gcodeCommand = direction === 'left' ? 'G1 X-10 F3000' : 'G1 X10 F3000';
-                        break;
-                    case 'y':
-                        gcodeCommand = direction === 'back' ? 'G1 Y-10 F3000' : 'G1 Y10 F3000';
-                        break;
-                    case 'z':
-                        gcodeCommand = direction === 'down' ? 'G1 Z-10 F3000' : 'G1 Z10 F3000';
-                        break;
-                }
-        
-                sendGcode(printerId, gcodeCommand);
-            }
-        
-            function setSettings() {
-    const printerIds = getSelectedPrinters(); // Get selected printers (single or multiple)
-    const nozzleTemp = document.getElementById('nozzle-temp').value;
-    const bedTemp = document.getElementById('bed-temp').value;
 
-    printerIds.forEach(printerId => {
-        sendGcode([printerId], `M104 S${nozzleTemp}`); // Set nozzle temp
-        sendGcode([printerId], `M140 S${bedTemp}`);    // Set bed temp
-        addNotification(printerId, `Settings updated: Nozzle ${nozzleTemp}°C, Bed ${bedTemp}°C`);
-    });
-}
+        <!-- Printer 3 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 3</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_3', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_3', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_3')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_3', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_3', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_3', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_3', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
 
-        
-            function setFanSpeed() {
-                const printerId = getSelectedPrinter();
-                const fanSpeed = document.getElementById('fan-speed').value;
-        
-                sendGcode(printerId, `M106 S${fanSpeed}`); // Set fan speed
-                addNotification(printerId, `Fan speed set to ${fanSpeed}%`);
-            }
-        </script>
-        
+        <!-- Printer 4 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 4</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_4', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_4', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_4')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_4', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_4', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_4', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_4', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printer 5 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 5</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_5', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_5', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_5')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_5', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_5', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_5', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_5', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printer 6 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 6</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_6', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_6', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_6')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_6', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_6', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_6', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_6', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printer 7 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 7</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_7', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_7', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_7')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_7', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_7', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_7', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_7', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printer 8 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 8</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_8', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_8', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_8')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_8', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_8', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_8', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_8', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printer 9 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 9</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_9', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_9', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_9')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_9', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_9', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_9', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_9', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Printer 10 -->
+        <div class="printer-card">
+            <h3>Prusa MK2S 10</h3>
+            <div class="control-grid">
+                <div class="joystick-controls">
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_10', 'y', 'back')">⬆️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_10', 'x', 'left')">⬅️</button>
+                        <button class="joystick-center" onclick="autoHome('prusa_mk2s_10')">🏠</button>
+                        <button onclick="moveAxis('prusa_mk2s_10', 'x', 'right')">➡️</button>
+                    </div>
+                    <div class="joystick-row">
+                        <button onclick="moveAxis('prusa_mk2s_10', 'y', 'front')">⬇️</button>
+                    </div>
+                </div>
+                <div class="z-controls">
+                    <button onclick="moveAxis('prusa_mk2s_10', 'z', 'up')">⬆️ Move Z+</button>
+                    <button onclick="moveAxis('prusa_mk2s_10', 'z', 'down')">⬇️ Move Z-</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+       
 
 <!-- Tab za Calibration -->
 <div id="Calibration" class="tabcontent">
@@ -607,195 +756,196 @@
 
     <!-- Grid container to organize printer cards into two columns -->
     <div class="calibration-grid">
-        <!-- Printer 1 -->
-        <div class="printer-card" id="prusa_mk2s_1">
-            <h3>Prusa MK2S 1</h3>
-            <div class="button-grid">            
-            <button onclick="autoHome('prusa_mk2s_1')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_1')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_1')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_1')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_1')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_1')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_1')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_1')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_1')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_1')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_1')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_1')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 1 -->
+<div class="printer-card" id="prusa_mk2s_1">
+    <h3>Prusa MK2S 1</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_1')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_1')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_1')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_1')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_1')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_1')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_1')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_1')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_1')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_1')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_1')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_1')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 2 -->
-        <div class="printer-card" id="prusa_mk2s_2">
-            <h3>Prusa MK2S 2</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_2')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_2')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_2')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_2')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_2')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_2')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_2')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_2')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_2')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_2')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_2')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_2')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 2 -->
+<div class="printer-card" id="prusa_mk2s_2">
+    <h3>Prusa MK2S 2</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_2')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_2')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_2')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_2')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_2')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_2')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_2')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_2')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_2')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_2')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_2')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_2')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 3 -->
-        <div class="printer-card" id="prusa_mk2s_3">
-            <h3>Prusa MK2S 3</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_3')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_3')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_3')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_3')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_3')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_3')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_3')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_3')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_3')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_3')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_3')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_3')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 3 -->
+<div class="printer-card" id="prusa_mk2s_3">
+    <h3>Prusa MK2S 3</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_3')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_3')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_3')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_3')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_3')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_3')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_3')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_3')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_3')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_3')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_3')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_3')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 4 -->
-        <div class="printer-card" id="prusa_mk2s_4">
-            <h3>Prusa MK2S 4</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_4')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_4')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_4')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_4')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_4')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_4')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_4')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_4')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_4')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_4')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_4')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_4')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 4 -->
+<div class="printer-card" id="prusa_mk2s_4">
+    <h3>Prusa MK2S 4</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_4')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_4')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_4')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_4')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_4')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_4')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_4')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_4')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_4')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_4')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_4')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_4')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 5 -->
-        <div class="printer-card" id="prusa_mk2s_5">
-            <h3>Prusa MK2S 5</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_5')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_5')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_5')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_5')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_5')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_5')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_5')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_5')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_5')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_5')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_5')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_5')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 5 -->
+<div class="printer-card" id="prusa_mk2s_5">
+    <h3>Prusa MK2S 5</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_5')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_5')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_5')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_5')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_5')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_5')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_5')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_5')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_5')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_5')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_5')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_5')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 6 -->
-        <div class="printer-card" id="prusa_mk2s_6">
-            <h3>Prusa MK2S 6</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_6')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_6')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_6')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_6')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_6')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_6')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_6')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_6')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_6')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_6')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_6')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_6')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 6 -->
+<div class="printer-card" id="prusa_mk2s_6">
+    <h3>Prusa MK2S 6</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_6')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_6')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_6')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_6')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_6')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_6')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_6')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_6')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_6')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_6')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_6')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_6')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 7 -->
-        <div class="printer-card" id="prusa_mk2s_7">
-            <h3>Prusa MK2S 7</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_7')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_7')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_7')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_7')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_7')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_7')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_7')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_7')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_7')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_7')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_7')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_7')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 7 -->
+<div class="printer-card" id="prusa_mk2s_7">
+    <h3>Prusa MK2S 7</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_7')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_7')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_7')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_7')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_7')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_7')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_7')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_7')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_7')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_7')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_7')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_7')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 8 -->
-        <div class="printer-card" id="prusa_mk2s_8">
-            <h3>Prusa MK2S 8</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_8')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_8')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_8')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_8')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_8')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_8')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_8')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_8')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_8')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_8')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_8')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_8')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 8 -->
+<div class="printer-card" id="prusa_mk2s_8">
+    <h3>Prusa MK2S 8</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_8')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_8')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_8')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_8')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_8')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_8')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_8')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_8')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_8')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_8')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_8')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_8')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 9 -->
-        <div class="printer-card" id="prusa_mk2s_9">
-            <h3>Prusa MK2S 9</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_9')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_9')">Self Test</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_9')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_9')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_9')">First Layer Calibration</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_9')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_9')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_9')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_9')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_9')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_9')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_9')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 9 -->
+<div class="printer-card" id="prusa_mk2s_9">
+    <h3>Prusa MK2S 9</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_9')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_9')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_9')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_9')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_9')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_9')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_9')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_9')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_9')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_9')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_9')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_9')">Reset XYZ Calibration</button>
     </div>
+</div>
 
-        <!-- Printer 10 -->
-        <div class="printer-card" id="prusa_mk2s_10">
-            <h3>Prusa MK2S 10</h3>
-            <div class="button-grid">
-            <button onclick="autoHome('prusa_mk2s_10')">Auto Home</button>
-            <button onclick="selfTest('prusa_mk2s_10')">Self Test</button>
-            <button onclick="firstLayerCalibration('prusa_mk2s_10')">First Layer Calibration</button>
-            <button onclick="calibrateXYZ('prusa_mk2s_10')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('prusa_mk2s_10')">Calibrate Z</button>
-            <button onclick="meshBedLeveling('prusa_mk2s_10')">Mesh Bed Leveling</button>
-            <button onclick="wizard('prusa_mk2s_10')">Wizard</button>
-            <button onclick="bedLevelCorrection('prusa_mk2s_10')">Bed Level Correction</button>
-            <button onclick="tempCalibration('prusa_mk2s_10')">Temperature Calibration</button>
-            <button onclick="pidCalibration('prusa_mk2s_10')">PID Calibration</button>
-            <button onclick="showEndStops('prusa_mk2s_10')">Show End Stops</button>
-            <button onclick="resetXYZCalibration('prusa_mk2s_10')">Reset XYZ Calibration</button>
-        </div>
+<!-- Printer 10 -->
+<div class="printer-card" id="prusa_mk2s_10">
+    <h3>Prusa MK2S 10</h3>
+    <div class="button-grid1">
+        <button onclick="autoHome('prusa_mk2s_10')">Auto Home</button>
+        <button onclick="selfTest('prusa_mk2s_10')">Self Test</button>
+        <button onclick="firstLayerCalibration('prusa_mk2s_10')">First Layer Calibration</button>
+        <button onclick="calibrateXYZ('prusa_mk2s_10')">Calibrate XYZ</button>
+        <button onclick="calibrateZ('prusa_mk2s_10')">Calibrate Z</button>
+        <button onclick="bedLevelCorrection('prusa_mk2s_10')">Bed Level Correction</button>
+        <button onclick="wizard('prusa_mk2s_10')">Wizard</button>
+        <button onclick="pidCalibration('prusa_mk2s_10')">PID Calibration</button>
+        <button onclick="tempCalibration('prusa_mk2s_10')">Temperature Calibration</button>
+        <button onclick="showEndStops('prusa_mk2s_10')">Show End Stops</button>
+        <button onclick="meshBedLeveling('prusa_mk2s_10')">Mesh Bed Leveling</button>
+        <button onclick="resetXYZCalibration('prusa_mk2s_10')">Reset XYZ Calibration</button>
     </div>
+</div>
+
     </div>
 </div>
 
