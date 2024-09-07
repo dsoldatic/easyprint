@@ -101,6 +101,7 @@ function checkHotendTemperature() {
 setInterval(checkHotendTemperature, 5000);
 
 
+
 // Funkcija za učitavanje filamenta
 function loadFilament() {
     const printerId = getSelectedPrinter();
@@ -140,16 +141,97 @@ function moveAxis(axis) {
     sendGcode(printerId, `G1 ${axis.toUpperCase()}10 F3000`);
 }
 
-// Funkcija za automatsko pozicioniranje osi
-function autoHome() {
-    const printerId = document.getElementById('printer-select').value;
-    sendGcode(printerId, 'G28');
+// Function to generate calibration cards for each printer
+function generateCalibrationCards() {
+    const calibrationContainer = document.getElementById('calibration-container');
+    calibrationContainer.innerHTML = '';  // Clear any existing content
+
+    printerIds.forEach(printerId => {
+        const printerCard = document.createElement('div');
+        printerCard.classList.add('printer-card');
+        printerCard.innerHTML = `
+            <h3>${printerId.replace('_', ' ').toUpperCase()}</h3>
+            <button onclick="autoHome('${printerId}')">Auto Home</button>
+            <button onclick="selfTest('${printerId}')">Self Test</button>
+            <button onclick="calibrateXYZ('${printerId}')">Calibrate XYZ</button>
+            <button onclick="calibrateZ('${printerId}')">Calibrate Z</button>
+            <button onclick="firstLayerCalibration('${printerId}')">First Layer Calibration</button>
+            <button onclick="meshBedLeveling('${printerId}')">Mesh Bed Leveling</button>
+            <button onclick="wizard('${printerId}')">Wizard</button>
+            <button onclick="bedLevelCorrection('${printerId}')">Bed Level Correction</button>
+            <button onclick="tempCalibration('${printerId}')">Temperature Calibration</button>
+            <button onclick="pidCalibration('${printerId}')">PID Calibration</button>
+            <button onclick="showEndStops('${printerId}')">Show End Stops</button>
+            <button onclick="resetXYZCalibration('${printerId}')">Reset XYZ Calibration</button>
+        `;
+        calibrationContainer.appendChild(printerCard);  // Add card to the grid
+    });
 }
 
-// Funkcija za XYZ kalibraciju
-function calibrateXYZ() {
-    const printerId = document.getElementById('printer-select').value;
+// Trigger generating calibration cards on Calibration tab click
+document.querySelector('.tablinks[onclick="openTab(event, \'Calibration\')"]').addEventListener('click', generateCalibrationCards);
+
+// Calibration functions for each printer
+function autoHome(printerId) {
+    sendGcode(printerId, 'G28');
+    addNotification(printerId, 'Auto Home executed.');
+}
+
+function selfTest(printerId) {
+    sendGcode(printerId, 'M997');
+    addNotification(printerId, 'Self Test initiated.');
+}
+
+function calibrateXYZ(printerId) {
     sendGcode(printerId, 'G29');
+    addNotification(printerId, 'XYZ Calibration started.');
+}
+
+function calibrateZ(printerId) {
+    sendGcode(printerId, 'G80');
+    addNotification(printerId, 'Z Calibration initiated.');
+}
+
+function firstLayerCalibration(printerId) {
+    sendGcode(printerId, 'M861');
+    addNotification(printerId, 'First Layer Calibration started.');
+}
+
+function meshBedLeveling(printerId) {
+    sendGcode(printerId, 'G80');
+    sendGcode(printerId, 'G29');
+    addNotification(printerId, 'Mesh Bed Leveling in progress.');
+}
+
+function wizard(printerId) {
+    sendGcode(printerId, 'M502');
+    addNotification(printerId, 'Wizard initiated.');
+}
+
+function bedLevelCorrection(printerId) {
+    sendGcode(printerId, 'M862');
+    addNotification(printerId, 'Bed Level Correction initiated.');
+}
+
+function tempCalibration(printerId) {
+    sendGcode(printerId, 'M303');
+    addNotification(printerId, 'Temperature Calibration started.');
+}
+
+function pidCalibration(printerId) {
+    sendGcode(printerId, 'M303 E0 S240 C8');
+    sendGcode(printerId, 'M500');
+    addNotification(printerId, 'PID Calibration completed.');
+}
+
+function showEndStops(printerId) {
+    sendGcode(printerId, 'M119');
+    addNotification(printerId, 'End Stop status requested.');
+}
+
+function resetXYZCalibration(printerId) {
+    sendGcode(printerId, 'M502');
+    addNotification(printerId, 'XYZ Calibration reset.');
 }
 
 // Funkcija za otvaranje notifikacijskog modala
@@ -161,6 +243,8 @@ function openNotifications() {
 function closeNotifications() {
     document.getElementById('notificationModal').style.display = 'none';
 }
+
+
 
 // Function to apply preheat settings to all selected printers
 function preheat(material) {
