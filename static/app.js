@@ -73,8 +73,8 @@ function checkHotendTemperature() {
             if (data.status === 'success' && data.response.hotend_temp !== null) {
                 const hotendTemp = data.response.hotend_temp;
 
-                // Check if the hotend temperature is at least 200°C
-                if (hotendTemp >= 200) {
+                // Check if the hotend temperature is at least 190°C
+                if (hotendTemp >= 190) {
                     loadFilamentBtn.disabled = false;
                     unloadFilamentBtn.disabled = false;
                     messageElement.style.display = 'none';  // Hide the message when buttons are enabled
@@ -337,7 +337,7 @@ function monitorPrinterStatus() {
 setInterval(monitorPrinterStatus, 5000);
 
 // Function to display status updates in the UI
-function updateStatusDisplay(printerId, status) {
+/*function updateStatusDisplay(printerId, status) {
     const statusElement = document.getElementById(`status-${printerId}`);
     statusElement.innerHTML = `
         <strong>${printerId.replace('_', ' ').toUpperCase()}:</strong>
@@ -345,7 +345,38 @@ function updateStatusDisplay(printerId, status) {
         <br><strong>Hotend Temperature:</strong> ${status.hotend_temp || 'N/A'} °C
         <br><strong>Bed Temperature:</strong> ${status.bed_temp || 'N/A'} °C
     `;
-}
+} */
+
+    function updateStatusDisplay(printerId, status) {
+        const controlPanelStatusElement = document.getElementById(`status-${printerId}`);
+        const calibrationStatusElement = document.getElementById(`status-${printerId}-calibration`);
+        const settingsStatusElement = document.getElementById(`status-${printerId}-settings`);
+        
+        // Update status for Control Panel
+        if (controlPanelStatusElement) {
+            controlPanelStatusElement.innerHTML = `
+                <p>Print Status: ${status.print_status || 'N/A'}</p>
+                <p>Hotend Temp: ${status.hotend_temp || 'N/A'} °C | Bed Temp: ${status.bed_temp || 'N/A'} °C</p>
+            `;
+        }
+    
+        // Update status for Calibration
+        if (calibrationStatusElement) {
+            calibrationStatusElement.innerHTML = `
+                <p>Print Status: ${status.print_status || 'N/A'}</p>
+                <p>Hotend Temp: ${status.hotend_temp || 'N/A'} °C | Bed Temp: ${status.bed_temp || 'N/A'} °C</p>
+            `;
+        }
+    
+        // Update status for Settings
+        if (settingsStatusElement) {
+            settingsStatusElement.innerHTML = `
+                <p>Print Status: ${status.print_status || 'N/A'}</p>
+                <p>Hotend Temp: ${status.hotend_temp || 'N/A'} °C | Bed Temp: ${status.bed_temp || 'N/A'} °C</p>
+            `;
+        }
+    }
+    
 
 
 // Funkcija za cooldown
@@ -489,7 +520,7 @@ function updateControlPanel() {
                     <button id="load-filament-${printerId}" onclick="loadFilament('${printerId}')" disabled>Load Filament</button>
                     <button id="unload-filament-${printerId}" onclick="unloadFilament('${printerId}')" disabled>Unload Filament</button>
                     <p id="filament-message-${printerId}">
-                     <small>The hotend nozzle must be over 200°C to enable these buttons.</small>
+                     <small>The hotend nozzle must be over 190°C to enable these buttons.</small>
                     </p>                
     </div>
             </div>
@@ -563,7 +594,7 @@ function fetchPrinterStatus(printerId) {
             `;
 
             // Enable/disable Load/Unload filament buttons based on hotend temperature
-            if (hotendTemp !== 'N/A' && parseFloat(hotendTemp) > 200) {
+            if (hotendTemp !== 'N/A' && parseFloat(hotendTemp) > 190) {
                 loadFilamentBtn.disabled = false;
                 unloadFilamentBtn.disabled = false;
             } else {

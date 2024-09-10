@@ -9,6 +9,33 @@ h1 {
     text-align: center;
 }
 
+
+.button-preheat-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Razmak između dugmadi */
+    margin-bottom: 30px; /* Dodaje veći razmak između preheat dugmadi i naslova Cooldown */
+
+}
+
+.preheat-button {
+    width: 120px; /* Širina dugmeta */
+    height: 120px; /* Visina dugmeta - kvadratni oblik */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+    word-wrap: break-word; /* Omogućava prelamanje reči */
+}
+
+.button-preheat-container .preheat-button:nth-child(2n+1) {
+    margin-right: 10px; /* Razmak između parova dugmadi */
+}
+
+
 /* Grid layout for control panel (2 printers per row) */
 .control-panel-grid {
     display: grid;
