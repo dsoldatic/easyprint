@@ -664,3 +664,29 @@ button:disabled {
         }
 
 
+        .printer-unavailable {
+            background-color: #d3d3d3; /* Light grey background */
+            color: #808080; /* Grey text color */
+        }
+        
+
+/* Greying out the entire card */
+.printer-card.printer-unavailable {
+    background-color: #d3d3d3; /* Light grey background */
+    color: #808080; /* Grey text color */
+    pointer-events: none; /* Disable all interactions */
+    opacity: 0.6; /* Slight transparency */
+}
+
+/* To ensure buttons are visually disabled as well */
+.printer-card.printer-unavailable button {
+    background-color: #ccc; /* Grey out buttons */
+    cursor: not-allowed; /* Change cursor to indicate the printer is unavailable */
+    border-color: #bbb; /* Modify button border to match greyed out style */
+}
+
+/* Prevent hover effects for buttons in unavailable state */
+.printer-card.printer-unavailable button:hover {
+    background-color: #ccc;
+}
+               

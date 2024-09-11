@@ -333,28 +333,36 @@ setInterval(monitorPrinterStatus, 5000);
     `;
 } */
 
-    function updateStatusDisplay(printerId, status) {
-        const controlPanelStatusElement = document.getElementById(`status-${printerId}`);
-        const calibrationStatusElement = document.getElementById(`status-${printerId}-calibration`);
-        const settingsStatusElement = document.getElementById(`status-${printerId}-settings`);
-        
-        // Update status for Control Panel
-        if (controlPanelStatusElement) {
-            controlPanelStatusElement.innerHTML = `
-                <p>Print Status: ${status.print_status || 'N/A'}</p>
-                <p>Hotend Temp: ${status.hotend_temp || 'N/A'} °C | Bed Temp: ${status.bed_temp || 'N/A'} °C</p>
-            `;
+  function updateStatusDisplay(printerId, status) {
+    // Get relevant elements
+    const controlPanelStatusElement = document.getElementById(`status-${printerId}`);
+    const calibrationStatusElement = document.getElementById(`status-${printerId}-calibration`);
+    const settingsStatusElement = document.getElementById(`status-${printerId}-settings`);
+    const printerCardElement = controlPanelStatusElement.closest('.printer-card'); // Use closest to get the parent printer card
+
+    if (printerCardElement) {
+        // Update the control panel status
+        controlPanelStatusElement.innerHTML = `
+            <p>Print Status: ${status.print_status || 'N/A'}</p>
+            <p>Hotend Temp: ${status.hotend_temp || 'N/A'} °C | Bed Temp: ${status.bed_temp || 'N/A'} °C</p>
+        `;
+
+        // Add or remove the 'printer-unavailable' class based on the print status
+        if (status.print_status === 'N/A') {
+            printerCardElement.classList.add('printer-unavailable');
+        } else {
+            printerCardElement.classList.remove('printer-unavailable');
         }
-    
-        // Update status for Calibration
+
+        // Update status for Calibration, if the element exists
         if (calibrationStatusElement) {
             calibrationStatusElement.innerHTML = `
                 <p>Print Status: ${status.print_status || 'N/A'}</p>
                 <p>Hotend Temp: ${status.hotend_temp || 'N/A'} °C | Bed Temp: ${status.bed_temp || 'N/A'} °C</p>
             `;
         }
-    
-        // Update status for Settings
+
+        // Update status for Settings, if the element exists
         if (settingsStatusElement) {
             settingsStatusElement.innerHTML = `
                 <p>Print Status: ${status.print_status || 'N/A'}</p>
@@ -362,7 +370,7 @@ setInterval(monitorPrinterStatus, 5000);
             `;
         }
     }
-    
+}
 
 
 // Funkcija za cooldown
