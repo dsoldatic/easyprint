@@ -154,7 +154,7 @@ input[type="file"] {
 /* Grid for the printer controls section (3 columns) */
 .printer-controls-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 20px;
     margin-top: 20px;
 }
@@ -645,7 +645,7 @@ button:disabled {
         /* Grid for buttons inside each printer card (3 columns, 4 rows) */
         .button-grid1 {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            grid-template-columns: repeat(4, 1fr); /* 3 columns */
             grid-gap: 10px;
         }
 

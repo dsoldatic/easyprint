@@ -108,101 +108,12 @@
 -->
     <!-- Gumbi za prebacivanje između tabova -->
     <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
-        <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
-        <button class="tablinks" onclick="openTab(event, 'Calibration')">Calibration</button>
+      <!--  <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button> -->
+      <!--  <button class="tablinks" onclick="openTab(event, 'Calibration')">Calibration</button> -->
         <button class="tablinks" onclick="openTab(event, 'ControlPanel')">Control Panel</button> <!-- New tab for Control Panel -->
     </div>    
 
-    <!-- Tab za Home (Početni) -->
-    <div id="Home" class="tabcontent">
 
-    <!-- Multi-Printer Management -->
-<label for="multi-printer-toggle">Printer Management (printer list):</label>
-<input type="checkbox" id="multi-printer-toggle" onchange="toggleMultiPrinter()">
-
- <!-- Checkboxes for multi-printer selection -->
- <div id="multi-printer-checkboxes-container" class="checkboxes-row" style="display:none;">
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_1" value="prusa_mk2s_1">
-        <label for="printer_mk2s_1">Prusa MK2S 1</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_2" value="prusa_mk2s_2">
-        <label for="printer_mk2s_2">Prusa MK2S 2</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_3" value="prusa_mk2s_3">
-        <label for="printer_mk2s_3">Prusa MK2S 3</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_4" value="prusa_mk2s_4">
-        <label for="printer_mk2s_4">Prusa MK2S 4</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_5" value="prusa_mk2s_5">
-        <label for="printer_mk2s_5">Prusa MK2S 5</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_6" value="prusa_mk2s_6">
-        <label for="printer_mk2s_6">Prusa MK2S 6</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_7" value="prusa_mk2s_7">
-        <label for="printer_mk2s_7">Prusa MK2S 7</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_8" value="prusa_mk2s_8">
-        <label for="printer_mk2s_8">Prusa MK2S 8</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_9" value="prusa_mk2s_9">
-        <label for="printer_mk2s_9">Prusa MK2S 9</label>
-    </div>
-    <div class="checkbox-item">
-        <input type="checkbox" id="printer_mk2s_10" value="prusa_mk2s_10">
-        <label for="printer_mk2s_10">Prusa MK2S 10</label>
-    </div>    
-</div>  
-        
-  <!-- Status Section for Multi-Printers -->
-  <h2>Status</h2>
-  <div id="status-container" class="status-list">
-      <div id="single-printer-status">Choose printer/s from the printer list</div>
-  </div>
-  
-  <h3>Preheat Options</h3>
-  <div class="button-preheat-container">
-      <button onclick="preheat('PLA')" class="preheat-button">PLA (215°C / 55°C)</button>
-      <button onclick="preheat('ABS')" class="preheat-button">ABS (255°C / 100°C)</button>
-      <button onclick="preheat('PET')" class="preheat-button">PET (240°C / 90°C)</button>
-      <button onclick="preheat('HIPS')" class="preheat-button">HIPS (220°C / 100°C)</button>
-      <button onclick="preheat('FLEX')" class="preheat-button">FLEX (230°C / 50°C)</button>
-  </div>
-  
-  <h3>Cooldown</h3>
-  <button onclick="cooldown()" class="preheat-button">Cooldown (Hotend 0°C / Bed 0°C)</button>
-
-<!--<h3>SD Card Files</h3>
-<select id="sd-file-select" disabled>
-    <option value="">Select a file from SD card</option>
-</select>
-<button id="refresh-files-btn" onclick="loadSdFiles()">Refresh Files</button>
-<p style="margin-bottom: 30px;"></p> -->
-
-<!--<h3>Print Controls</h3>
-<button id="start-print-btn" onclick="startPrint()" disabled>Start Print</button>
-<button id="pause-print-btn" onclick="pausePrint()" disabled>Pause Print</button>
-<button id="resume-print-btn" onclick="resumePrint()" disabled>Resume Print</button>
-<button id="cancel-print-btn" onclick="cancelPrint()" disabled>Cancel Print</button>
-<p style="margin-bottom: 40px;"><small><em>To enable these buttons, choose a file from the SD card.</em></small></p> <!-- Instruction added -->
-
-<!--<h3>Filament Controls</h3>
-<button id="load-filament-btn" onclick="loadFilament()" disabled>Load Filament</button>
-<button id="unload-filament-btn" onclick="unloadFilament()" disabled>Unload Filament</button>
-<p><small><em>The hotend nozzle must be over 190°C to enable these buttons.</em></small></p>  Instruction added -->
-
-</div>
 
 <!-- Control Panel Tab -->
 <div id="ControlPanel" class="tabcontent">
@@ -217,9 +128,16 @@
             </div>
             <!-- Preheat/Cooldown buttons -->
             <div class="control-column">
+                <h4>Preheat/Cooldown</h4>
                 <button onclick="preheat('prusa_mk2s_1', 'PLA')">Preheat PLA</button>
                 <button onclick="cooldown('prusa_mk2s_1')">Cooldown</button>
             </div>
+            <div class="control-column">
+                <h4>Calibration</h4>
+                <button onclick="autoHome('${printerId}')">Auto Home</button>
+                <button onclick="meshBedLeveling('${printerId}')">Mesh Bed Leveling</button>
+                <button onclick="resetXYZCalibration('${printerId}')">Reset XYZ Calibration</button>
+            </div>            
 
             <!-- File upload and print controls -->
             <div class="control-column">
@@ -945,7 +863,7 @@
             document.getElementById('notificationModal').style.display = 'none';
         }
 
-        // Postavi početni tab kao default (otvori Home tab pri učitavanju)
+        // Postavi početni tab kao default (otvori Control Panel pri učitavanju)
         document.getElementById("defaultOpen").click();
 
         // Funkcija za dohvaćanje trenutno odabranog printera
