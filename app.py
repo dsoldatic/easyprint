@@ -18,10 +18,10 @@ printers = {
     'prusa_mk2s_4': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65440-if00',
     'prusa_mk2s_2': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
     'prusa_mk2s_3': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
-    'prusa_mk2s_5': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_5': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX3318X003XK80165-if00',
     'prusa_mk2s_6': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
     'prusa_mk2s_7': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
-    'prusa_mk2s_8': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
+    'prusa_mk2s_8': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_MK2_CZPX2218X003XK65470-if00',
     'prusa_mk2s_9': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_',
     'prusa_mk2s_10': '/dev/serial/by-id/usb-Prusa_Research__prusa3d.com__Original_Prusa_i3_'    
 }
