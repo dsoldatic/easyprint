@@ -6,10 +6,10 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
 # Directory where the G-code files will be saved
-UPLOAD_FOLDER = '/Users/davidsoldatic/EasyPrint/easyprint-1/gcode_files'
+UPLOAD_FOLDER = '/home/pipi/moj_zavrsni/gcode_files'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 
 # Simulirani printeri - zamijeni s pravim ID-ovima za tvoje printere
