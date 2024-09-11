@@ -1070,26 +1070,27 @@ function handleFileSelect(printerId) {
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch(`/api/upload_gcode/${printerId}`, {
+    fetch(`/api/upload_gcode_and_print/${printerId}`, {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            document.getElementById(`file-name-display-${printerId}`).textContent = data.file_name;
-            addNotification(printerId, `File "${data.file_name}" uploaded successfully.`);
+            document.getElementById(`file-name-display-${printerId}`).textContent = file.name;
+            addNotification(printerId, `File "${file.name}" uploaded and printing started.`);
         } else {
-            alert(`Upload failed: ${data.message}`);
-            addNotification(printerId, `Failed to upload file: ${data.message}`);
+            alert(`Failed to print: ${data.message}`);
+            addNotification(printerId, `Failed to print: ${data.message}`);
         }
     })
     .catch(error => {
-        console.error('Error uploading file:', error);
-        alert('Error uploading file.');
-        addNotification(printerId, 'Error uploading file.');
+        console.error('Error during printing:', error);
+        alert('Error during printing.');
+        addNotification(printerId, 'Error during printing.');
     });
 }
+
 
   // Functions for each calibration action
 

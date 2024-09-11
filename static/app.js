@@ -491,15 +491,41 @@ function handleFileSelect(printerId) {
 
 // Function to start the print after uploading the file
 function startPrint(printerId) {
-    const selectedFile = document.getElementById(`file-name-display-${printerId}`).textContent;
-    if (selectedFile === 'No file selected') {
-        alert('Please select a file first.');
+    const fileInput = document.getElementById(`file-input-${printerId}`);
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('No file selected.');
         return;
     }
 
-    sendGcode([printerId], `M23 ${selectedFile}`);
-    sendGcode([printerId], 'M24');
-    addNotification(printerId, `Print started for file: ${selectedFile}`);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch(`/api/upload_gcode_and_print/${printerId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            addNotification(printerId, `Print started for file: ${file.name}`);
+            // Make sure to eject SD card mode from the printer
+            fetch('/api/control', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ printer_id: printerId, gcode_command: 'M22' }) // Eject SD card
+            });
+        } else {
+            alert(`Failed to print: ${data.message}`);
+            addNotification(printerId, `Failed to print: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error during printing:', error);
+        alert('Error during printing.');
+        addNotification(printerId, 'Error during printing.');
+    });
 }
 
 
@@ -581,10 +607,10 @@ function cooldown(printerId) {
     sendGcode(printerId, 'M140 S0');  // Turn off bed
 }
 
-function startPrint(printerId) {
-    sendGcode(printerId, 'M24');
-    addNotification(printerId, 'Print started');
-}
+//function startPrint(printerId) {
+ //   sendGcode(printerId, 'M24');
+ //   addNotification(printerId, 'Print started');
+//}
 
 function pausePrint(printerId) {
     sendGcode(printerId, 'M25');  // Pause print

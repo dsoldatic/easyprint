@@ -58,6 +58,50 @@ def send_gcode(printer_id, gcode_command):
     else:
         return error or "Printer not found or disconnected"
 
+# Function to stream the G-code to the printer line-by-line
+def send_gcode_to_printer(printer_id, gcode_file_path):
+    serial_port = printers.get(printer_id)
+    if not serial_port:
+        return {'status': 'error', 'message': 'Printer not found'}
+
+    try:
+        # Open serial connection to the printer
+        with serial.Serial(serial_port, 115200, timeout=10) as ser:
+            time.sleep(2)  # Allow the connection to stabilize
+
+            # Ensure printer is in USB mode by sending M22 (Eject SD card)
+            ser.write(b'M22\n')
+            ser.flush()
+
+            # Open the G-code file and send it line by line to the printer
+            with open(gcode_file_path, 'r') as gcode_file:
+                for line in gcode_file:
+                    ser.write(line.encode())  # Send each G-code line to the printer
+                    ser.flush()
+                    time.sleep(0.05)  # Short delay to ensure smooth data transmission
+
+            return {'status': 'success', 'message': f'File {gcode_file_path} sent to printer {printer_id}'}
+    except (serial.SerialException, OSError) as e:
+        return {'status': 'error', 'message': f'Error sending G-code: {str(e)}'}
+
+# Flask route to upload the G-code file and send it to the printer via USB
+@app.route('/api/upload_gcode_and_print/<printer_id>', methods=['POST'])
+def upload_gcode_and_print(printer_id):
+    if 'file' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No file provided'}), 400
+
+    file = request.files['file']
+    if file.filename == '' or not file.filename.lower().endswith('.gcode'):
+        return jsonify({'status': 'error', 'message': 'Invalid file format'}), 400
+
+    # Save the uploaded file to the server's G-code folder
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(file_path)
+
+    # Send the G-code file to the printer over USB
+    result = send_gcode_to_printer(printer_id, file_path)
+    return jsonify(result)
+
 # Route to handle G-code commands
 @app.route('/api/control', methods=['POST'])
 def control_printer():
