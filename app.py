@@ -171,14 +171,5 @@ def get_sd_files(printer_id):
     else:
         return {"error": "Printer not found or disconnected"}
 
-# Ruta za dohvaćanje datoteka sa SD kartice
-@app.route('/api/sd_files', methods=['POST'])
-def sd_files():
-    data = request.json
-    printer_id = data.get('printer_id')
-    files = get_sd_files(printer_id)
-    return jsonify({'status': 'success', 'files': files})
-
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5005)

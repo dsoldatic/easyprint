@@ -116,25 +116,7 @@
 
     <!-- Tab za Home (Početni) -->
     <div id="Home" class="tabcontent">
-        <!-- Vraćanje gumba za odabir printera -->
-      <!--   <label for="printer-select">Select Printer:</label>
-        <select id="printer-select">
-            <option value="" selected disabled>Select a printer</option>
-            <option value="prusa_mk2s_1">Prusa MK2S 1</option>
-            <option value="prusa_mk2s_4">Prusa MK2S 4</option>
-            <option value="prusa_mk2s_2">Prusa MK2S 2</option>
-            <option value="prusa_mk2s_3">Prusa MK2S 3</option>
-            <option value="prusa_mk2s_5">Prusa MK2S 5</option>
-            <option value="prusa_mk2s_6">Prusa MK2S 6</option>
-            <option value="prusa_mk2s_7">Prusa MK2S 7</option>
-            <option value="prusa_mk2s_8">Prusa MK2S 8</option>
-            <option value="prusa_mk2s_9">Prusa MK2S 9</option>
-            <option value="prusa_mk2s_10">Prusa MK2S 10</option>
 
-            
-        </select>
-        -->
-     
     <!-- Multi-Printer Management -->
 <label for="multi-printer-toggle">Printer Management (printer list):</label>
 <input type="checkbox" id="multi-printer-toggle" onchange="toggleMultiPrinter()">
@@ -220,7 +202,7 @@
 <button id="unload-filament-btn" onclick="unloadFilament()" disabled>Unload Filament</button>
 <p><small><em>The hotend nozzle must be over 190°C to enable these buttons.</em></small></p>  Instruction added -->
 
-    </div>
+</div>
 
 <!-- Control Panel Tab -->
 <div id="ControlPanel" class="tabcontent">
@@ -1031,7 +1013,6 @@
 </div>
 
 
-
     <script>
         // JavaScript funkcija za otvaranje tabova
         function openTab(evt, tabName) {
@@ -1065,29 +1046,7 @@
             return document.getElementById('printer-select').value;
         }
 
-    // Updated sendGcode function to handle multiple printers
-    function sendGcode(printerIds, gcode, callback) {
-        printerIds.forEach(printerId => {
-            fetch('/api/control', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ printer_id: printerId, gcode_command: gcode })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(`G-code response from ${printerId}:`, data);
-                if (callback) {
-                    callback();
-                }
-            })
-            .catch(error => {
-                console.error(`Error sending G-code to ${printerId}:`, error);
-                addNotification(printerId, 'Error sending G-code.');
-            });
-        });
-    }
+    
 
 // Function for adding notifications
 function addNotification(printerId, message) {
@@ -1132,129 +1091,6 @@ function handleFileSelect(printerId) {
     });
 }
 
-// Funkcija za dohvaćanje datoteka sa SD kartice
-/*function loadSdFiles() {
-    const printerId = getSelectedPrinter();
-    
-    fetch('/api/sd_files', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ printer_id: printerId }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        const fileSelect = document.getElementById('sd-file-select');
-        fileSelect.innerHTML = '<option value="">Select a file from SD card</option>';  // Reset options
-        if (data.status === 'success') {
-            data.files.forEach(file => {
-                const option = document.createElement('option');
-                option.value = file;
-                option.text = file;
-                fileSelect.appendChild(option);
-            });
-            fileSelect.disabled = false;  // Enable file selection
-        }
-    })
-    .catch(error => console.error('Error fetching SD card files:', error));
-}
-
-// Funkcija za odabir datoteke i omogućavanje kontrole ispisa
-document.getElementById('sd-file-select').addEventListener('change', function () {
-    const selectedFile = this.value;
-    const startPrintBtn = document.getElementById('start-print-btn');
-    const pausePrintBtn = document.getElementById('pause-print-btn');
-    const resumePrintBtn = document.getElementById('resume-print-btn');
-    const cancelPrintBtn = document.getElementById('cancel-print-btn');
-
-    if (selectedFile) {
-        startPrintBtn.disabled = false;
-        pausePrintBtn.disabled = false;
-        resumePrintBtn.disabled = false;
-        cancelPrintBtn.disabled = false;
-    } else {
-        startPrintBtn.disabled = true;
-        pausePrintBtn.disabled = true;
-        resumePrintBtn.disabled = true;
-        cancelPrintBtn.disabled = true;
-    }
-});
-
-// Funkcija za start ispisa
-function startPrint() {
-    const printerIds = getSelectedPrinters(); // Get selected printers (single or multiple)
-    const selectedFile = document.getElementById('sd-file-select').value;
-
-    if (!selectedFile) {
-        alert('Please select a file from the SD card first.');
-        return;
-    }
-
-    // Apply start print to all selected printers
-    printerIds.forEach(printerId => {
-        // Select the file with M23
-        sendGcode([printerId], `M23 ${selectedFile}`);
-        // Start printing with M24
-        sendGcode([printerId], 'M24');
-        addNotification(printerId, `Print started for file: ${selectedFile}`);
-    });
-}
-
-        // Funkcija za pauziranje printa
-        function pausePrint() {
-            const printerId = getSelectedPrinter();
-            sendGcode(printerId, 'M25');  // Pause printa
-            addNotification(printerId, 'Print paused');
-        }
-
-        // Funkcija za nastavak printa (resume)
-        function resumePrint() {
-            const printerId = getSelectedPrinter();
-            sendGcode(printerId, 'M24');  // Resume printa
-            addNotification(printerId, 'Print resumed');
-        }
-
-        // Funkcija za otkazivanje printa (cancel)
-        function cancelPrint() {
-            const printerId = getSelectedPrinter();
-            sendGcode(printerId, 'M26');  // Cancel printa
-            addNotification(printerId, 'Print cancelled');
-        }
-*/
-// Funkcija za dohvaćanje statusa printera
-function getPrinterStatus() {
-    const printerId = document.getElementById('printer-select').value;
-
-    fetch('/api/status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ printer_id: printerId }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const printerStatus = data.response;
-
-            if (printerStatus.error) {
-                document.getElementById('printer-status').textContent = `Status: ${printerStatus.error}`;
-            } else {
-                document.getElementById('printer-status').innerHTML = `
-                    <strong>Print Status:</strong> ${printerStatus.print_status} <br>
-                    <strong>Temperature:</strong> ${printerStatus.temperature_status} <br>
-                    <strong>Endstop Status:</strong> ${printerStatus.endstop_status}
-                `;
-            }
-        }
-    })
-    .catch(error => {
-        document.getElementById('printer-status').textContent = `Status: Error fetching status.`;
-        console.error('Error:', error);
-    });
-}
-
   // Functions for each calibration action
 
     // Auto Home (G28)
@@ -1267,111 +1103,6 @@ function getPrinterStatus() {
     });
 }
 
-    // Example usage: Apply an action to all selected printers
-    function preheat(material) {
-        const printerIds = getSelectedPrinters();
-        let hotendTemp, bedTemp, materialName;
-
-        switch (material) {
-            case 'PLA':
-                hotendTemp = 215;
-                bedTemp = 55;
-                materialName = 'PLA';
-                break;
-            case 'ABS':
-                hotendTemp = 255;
-                bedTemp = 100;
-                materialName = 'ABS';
-                break;
-            // Add other materials as needed
-        }
-
-        printerIds.forEach(printerId => {
-            sendGcode([printerId], `M104 S${hotendTemp}`);
-            sendGcode([printerId], `M140 S${bedTemp}`);
-            addNotification(printerId, `Preheating for ${materialName} (Hotend: ${hotendTemp}°C, Bed: ${bedTemp}°C)`);
-        });
-    }
-
-
-    // Self Test (M997 for Prusa MK2S)
-    function selfTest() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M997');
-        addNotification(printerId, 'Self Test initiated.');
-    }
-
-    // Calibrate XYZ (G29)
-    function calibrateXYZ() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'G29');
-        addNotification(printerId, 'XYZ Calibration started.');
-    }
-
-    // Calibrate Z (G80)
-    function calibrateZ() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'G80');
-        addNotification(printerId, 'Z Calibration initiated.');
-    }
-
-    // First Layer Calibration (M861)
-    function firstLayerCalibration() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M861');
-        addNotification(printerId, 'First Layer Calibration started.');
-    }
-
-    // Mesh Bed Leveling (G80 followed by G29)
-    function meshBedLeveling() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'G80'); // Auto Home before leveling
-        sendGcode(printerId, 'G29'); // Mesh Bed Leveling
-        addNotification(printerId, 'Mesh Bed Leveling in progress.');
-    }
-
-    // Wizard (custom implementation)
-    function wizard() {
-        const printerId = getSelectedPrinter();
-        // Custom wizard G-code implementation can go here
-        addNotification(printerId, 'Calibration wizard started.');
-    }
-
-    // Bed Level Correction (M862)
-    function bedLevelCorrection() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M862');
-        addNotification(printerId, 'Bed Level Correction initiated.');
-    }
-
-    // Temperature Calibration (M303)
-    function tempCalibration() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M303');
-        addNotification(printerId, 'Temperature Calibration started.');
-    }
-
-    // PID Calibration (M303 for hotend or bed)
-    function pidCalibration() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M303 E0 S240 C8'); // Example for hotend PID Calibration (Extruder 0, 240°C)
-        sendGcode(printerId, 'M500'); // Save settings
-        addNotification(printerId, 'PID Calibration completed and saved.');
-    }
-
-    // Show End Stops (M119)
-    function showEndStops() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M119');
-        addNotification(printerId, 'End Stop status requested.');
-    }
-
-    // Reset XYZ Calibration (M502)
-    function resetXYZCalibration() {
-        const printerId = getSelectedPrinter();
-        sendGcode(printerId, 'M502');
-        addNotification(printerId, 'XYZ Calibration reset to defaults.');
-    }
 
 // Toggle multi-printer checkbox visibility and disable single printer dropdown
 function toggleMultiPrinter() {
@@ -1384,8 +1115,6 @@ function toggleMultiPrinter() {
     // Show or hide multi-printer checkboxes
     multiPrinterCheckboxesContainer.style.display = isChecked ? 'block' : 'none';
 
-    // Disable or enable the single printer selection dropdown
-    singlePrinterSelect.disabled = isChecked;
 
     // If multi-printer mode is enabled, forget previously selected printer and clear statuses
     if (isChecked) {
@@ -1399,7 +1128,6 @@ function toggleMultiPrinter() {
         statusContainer.innerHTML = ''; // Clear multi-printer statuses
     }
 }
-
 
 // Get selected printers from checkboxes or dropdown
 function getSelectedPrinters() {
@@ -1441,40 +1169,6 @@ function updatePrinterStatuses() {
     });
 }
 
-
-/*
-// Fetch printer status from API
-function fetchPrinterStatus(printerId) {
-    fetch('/api/status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ printer_id: printerId }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        const statusItem = document.getElementById(`status-${printerId}`);
-        if (data.status === 'success') {
-            const printerStatus = data.response;
-            if (printerStatus.error) {
-                statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> ${printerStatus.error}`;
-            } else {
-                statusItem.innerHTML = `
-                    <strong>${printerId.replace('_', ' ').toUpperCase()}:</strong>
-                    <br><strong>Print Status:</strong> ${printerStatus.print_status}
-                    <br><strong>Temperature:</strong> ${printerStatus.temperature_status}
-                    <br><strong>Endstop Status:</strong> ${printerStatus.endstop_status}
-                `;
-            }
-        }
-    })
-    .catch(error => {
-        const statusItem = document.getElementById(`status-${printerId}`);
-        statusItem.innerHTML = `<strong>${printerId.replace('_', ' ').toUpperCase()}:</strong> Printer not found or disconnected`;
-    });
-}*/
-
 // Ensure statuses are updated when toggling multi-printer mode
 document.getElementById('multi-printer-toggle').addEventListener('change', toggleMultiPrinter);
 
@@ -1482,9 +1176,6 @@ document.getElementById('multi-printer-toggle').addEventListener('change', toggl
 document.querySelectorAll('#multi-printer-checkboxes-container input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', updatePrinterStatuses);
 });
-
-// Set default tab as "Home"
-document.getElementById("defaultOpen").click();
 
 
     </script>
