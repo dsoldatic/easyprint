@@ -71,7 +71,38 @@ function checkHotendTemperature() {
 // Periodically check temperature for all printers every 5 seconds
 setInterval(checkHotendTemperature, 5000);
 
+// Debounce funkcija
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
+// Throttle funkcija
+function throttle(func, limit) {
+    let lastFunc;
+    let lastRan;
+    return function(...args) {
+        if (!lastRan) {
+            func(...args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(function() {
+                if ((Date.now() - lastRan) >= limit) {
+                    func(...args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    };
+}
 
 // Funkcija za učitavanje filamenta
 function loadFilament() {
@@ -507,7 +538,13 @@ setInterval(async () => {
     printerIds.forEach(printerId => fetchPrinterStatus(printerId));
 }, 2000); // Set to 2 seconds (2000 milliseconds)
 
+// Optimizirano povlačenje statusa svih printera s throttle
+const throttledFetchAllPrinters = throttle(() => {
+    const printerIds = ['prusa_mk2s_1', 'prusa_mk2s_2', 'prusa_mk2s_3'];
+    printerIds.forEach(printerId => fetchPrinterStatus(printerId));
+}, 5000); // Povlačenje svakih 5 sekundi
 
+setInterval(throttledFetchAllPrinters, 5000);
 
 // Example of sending a preheat command to a specific printer
 function preheat(printerId, material) {
