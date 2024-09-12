@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
 # Directory where the G-code files will be saved
-UPLOAD_FOLDER = '/home/pipi/moj_zavrsni/gcode_files'
+UPLOAD_FOLDER = '/Users/davidsoldatic/EasyPrint/easyprint-1/gcode_files' # '/Users/davidsoldatic/EasyPrint/easyprint-1/gcode_files' ,# '/home/pipi/moj_zavrsni/gcode_files'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure the folder exists
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -36,14 +36,13 @@ def get_serial_connection(printer_id):
         if printer_id in printer_connections and printer_connections[printer_id].is_open:
             return printer_connections[printer_id], None
         try:
-            # Open the connection only if it's not already open
             ser = serial.Serial(serial_port, 115200, timeout=10)
-            time.sleep(2)  # Allow the printer time to initialize
+            time.sleep(2)  # Allow time for connection stabilization
             printer_connections[printer_id] = ser
-        except (serial.SerialException, OSError) as e:
+            return ser, None
+        except serial.SerialException as e:
             return None, str(e)
-    return printer_connections.get(printer_id), None
-
+    return None, "Printer not found"
 
 # Function to send G-code command to the printer
 def send_gcode(printer_id, gcode_command):
@@ -65,20 +64,17 @@ def send_gcode_to_printer(printer_id, gcode_file_path):
         return {'status': 'error', 'message': 'Printer not found'}
 
     try:
-        # Open serial connection to the printer
         with serial.Serial(serial_port, 115200, timeout=10) as ser:
-            time.sleep(2)  # Allow the connection to stabilize
+            time.sleep(2) 
 
-            # Ensure printer is in USB mode by sending M22 (Eject SD card)
             ser.write(b'M22\n')
             ser.flush()
 
-            # Open the G-code file and send it line by line to the printer
             with open(gcode_file_path, 'r') as gcode_file:
                 for line in gcode_file:
-                    ser.write(line.encode())  # Send each G-code line to the printer
+                    ser.write(line.encode())  
                     ser.flush()
-                    time.sleep(0.05)  # Short delay to ensure smooth data transmission
+                    time.sleep(0.05) 
 
             return {'status': 'success', 'message': f'File {gcode_file_path} sent to printer {printer_id}'}
     except (serial.SerialException, OSError) as e:
@@ -150,11 +146,6 @@ def get_printer_status(printer_id):
             ser.flush()
             temp_status_raw = ser.readline().decode('utf-8').strip()
 
-            # Fetch Endstop Status (M119)
-            ser.write(b'M119\n')
-            ser.flush()
-            endstop_status_raw = ser.readline().decode('utf-8').strip()
-
             # Parse temperature from the M105 response
             hotend_temp, bed_temp = None, None
             if "T:" in temp_status_raw:
@@ -162,21 +153,18 @@ def get_printer_status(printer_id):
             if "B:" in temp_status_raw:
                 bed_temp = temp_status_raw.split("B:")[1].split(" ")[0]  # Extract bed temp
 
-            # Parse endstop status
-            endstop_status = endstop_status_raw if endstop_status_raw else "N/A"
 
             # Clean print status (Extract relevant part)
-            if "SD printing" in print_status_raw:
+            if "USB printing" in print_status_raw:
                 print_status = "Printing"
             else:
-                print_status = "Not SD printing"
+                print_status = "Not printing"
 
             # Return parsed status information
             return {
                 'print_status': print_status,
                 'hotend_temp': hotend_temp if hotend_temp else "N/A",
                 'bed_temp': bed_temp if bed_temp else "N/A",
-                'endstop_status': endstop_status
             }
 
         except (serial.SerialException, OSError) as e:
@@ -191,29 +179,6 @@ def printer_status():
     printer_id = data.get('printer_id')
     status = get_printer_status(printer_id)
     return jsonify({'status': 'success', 'response': status})
-
-# Funkcija za dohvaćanje popisa datoteka sa SD kartice (M20)
-def get_sd_files(printer_id):
-    serial_port = printers.get(printer_id)
-    if serial_port:
-        try:
-            with serial.Serial(serial_port, 115200, timeout=5) as ser:
-                time.sleep(2)  # Dajemo printeru vremena da se pokrene
-                
-                # Fetch SD card files (M20)
-                ser.write(b'M20\n')
-                ser.flush()
-                files_list = []
-                while True:
-                    response = ser.readline().decode('utf-8').strip()
-                    if response.startswith('End file list'):
-                        break
-                    files_list.append(response)
-                return files_list
-        except (serial.SerialException, OSError):
-            return {"error": "Printer not found or disconnected"}
-    else:
-        return {"error": "Printer not found or disconnected"}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5005)

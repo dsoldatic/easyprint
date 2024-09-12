@@ -4,158 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
     <title>EasyPrint - Control Your Printers</title>
-    <style>
-        /* Stilski detalji za tabove */
-        .tab {
-            overflow: hidden;
-            background-color: #f1f1f1;
-        }
-
-        .tab button {
-            background-color: inherit;
-            color: black;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            font-size: 17px;
-        }
-
-        .tab button:hover {
-            background-color: #ddd;
-        }
-
-        .tab button.active {
-            background-color: #ccc;
-            color: black; /* Postavljanje crne boje teksta za aktivni tab */
-        }
-
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border-top: none;
-        }
-
-        .tabcontent.active {
-            display: block;
-        }
-         /* Stil za select dropdown */
-         select {
-            margin-bottom: 10px;
-        }
-        /* Stil za notification button */
-        .notification-button {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-        }
-
-        /* Stil za modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover, .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+    <style> 
     </style>
 </head>
 <body>
 
     <h1>EasyPrint - 3D Printer Control</h1>
     <div class="notification-button">
- <!--       <button onclick="openNotifications()">Notifications</button> -->
     </div> 
 
-  <!-- Modalni prozor za notifikacije -->
- <!--  <div id="notificationModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeNotifications()">&times;</span>
-        <h2>Printer Notifications</h2>
-        <div id="notification-list">
-         Dinamički popunjene notifikacije će biti prikazane ovdje 
-        </div>
-    </div>
-</div>
--->
+
     <!-- Gumbi za prebacivanje između tabova -->
-    <div class="tab">
-      <!--  <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button> -->
+<div class="tab">
       <!--  <button class="tablinks" onclick="openTab(event, 'Calibration')">Calibration</button> -->
-        <button class="tablinks" onclick="openTab(event, 'ControlPanel')">Control Panel</button> <!-- New tab for Control Panel -->
-    </div>    
+    <button class="tablinks" onclick="openTab(event, 'ControlPanel')">Control Panel</button> 
+      <!--  <button class="tablinks" onclick="openTab(event, 'Settings')">Move X,Y,Z</button>  -->
+
+</div>    
 
 
 
 <!-- Control Panel Tab -->
 <div id="ControlPanel" class="tabcontent">
-    <h2>Control Panel</h2>
+    <h2></h2>
     <div id="control-panel-container" class="control-panel-grid">
-        <!-- Printer 1 card -->
-        <div class="printer-card">
-            <h3>PRUSA MK2S_1</h3>
-            <div class="printer-status" id="status-prusa_mk2s_1">
-                <p>Print Status: Loading...</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <!-- Preheat/Cooldown buttons -->
-            <div class="control-column">
-                <h4>Preheat/Cooldown</h4>
-                <button onclick="preheat('prusa_mk2s_1', 'PLA')">Preheat PLA</button>
-                <button onclick="cooldown('prusa_mk2s_1')">Cooldown</button>
-            </div>
-            <div class="control-column">
-                <h4>Calibration</h4>
-                <button onclick="autoHome('${printerId}')">Auto Home</button>
-                <button onclick="meshBedLeveling('${printerId}')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('${printerId}')">Reset XYZ Calibration</button>
-            </div>            
-
-            <!-- File upload and print controls -->
-            <div class="control-column">
-                <input type="file" id="file-input-prusa_mk2s_1" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_1')"/>
-                <label for="file-input-prusa_mk2s_1" style="cursor: pointer;">Choose File (.gcode)</label>
-                <span id="file-name-display-prusa_mk2s_1">No file selected</span>
-                <button onclick="startPrint('prusa_mk2s_1')">Start Print</button>
-                <button onclick="pausePrint('prusa_mk2s_1')">Pause Print</button>
-                <button onclick="resumePrint('prusa_mk2s_1')">Resume Print</button>
-                <button onclick="cancelPrint('prusa_mk2s_1')">Cancel Print</button>
-            </div>
-
-<!-- Load/Unload Filament with message -->
-<div class="control-column">
-    <button id="load-filament-prusa_mk2s_1" onclick="loadFilament('prusa_mk2s_1')" disabled>Load Filament</button>
-    <button id="unload-filament-prusa_mk2s_1" onclick="unloadFilament('prusa_mk2s_1')" disabled>Unload Filament</button>
-    <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
-</div>
+ <!-- Printer 1 card -->
+<div class="printer-card">
+    <h3>PRUSA MK2S_1</h3>
+    <div class="printer-status" id="status-prusa_mk2s_1">
+        <p>Print Status: Loading...</p>
+        <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
+    </div>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_1', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_1', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_1', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_1')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_1" onclick="loadFilament('prusa_mk2s_1')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_1" onclick="unloadFilament('prusa_mk2s_1')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_1')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_1')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_1')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_1" accept=".gcode" onchange="handleFileSelect('prusa_mk2s_1')"/>
+            <label for="file-input-prusa_mk2s_1" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_1">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_1')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_1')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_1')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_1')">Cancel Print</button>
+        </div>
+    </div>
 </div>
 
 <!-- Printer 2 card -->
@@ -165,23 +74,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_2', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_2')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_2" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_2')"/>
-        <label for="file-input-prusa_mk2s_2" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_2">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_2')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_2')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_2')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_2')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_2" onclick="loadFilament('prusa_mk2s_2')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_2" onclick="unloadFilament('prusa_mk2s_2')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_2', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_2', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_2', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_2')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_2" onclick="loadFilament('prusa_mk2s_2')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_2" onclick="unloadFilament('prusa_mk2s_2')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_2')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_2')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_2')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_2" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_2')"/>
+            <label for="file-input-prusa_mk2s_2" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_2">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_2')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_2')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_2')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_2')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -192,23 +111,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_3', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_3')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_3" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_3')"/>
-        <label for="file-input-prusa_mk2s_3" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_3">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_3')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_3')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_3')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_3')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_3" onclick="loadFilament('prusa_mk2s_3')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_3" onclick="unloadFilament('prusa_mk2s_3')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_3', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_3', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_3', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_3')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_3" onclick="loadFilament('prusa_mk2s_3')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_3" onclick="unloadFilament('prusa_mk2s_3')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_3')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_3')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_3')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_3" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_3')"/>
+            <label for="file-input-prusa_mk2s_3" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_3">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_3')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_3')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_3')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_3')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -219,23 +148,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_4', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_4')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_4" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_4')"/>
-        <label for="file-input-prusa_mk2s_4" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_4">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_4')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_4')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_4')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_4')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_4" onclick="loadFilament('prusa_mk2s_4')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_4" onclick="unloadFilament('prusa_mk2s_4')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_4', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_4', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_4', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_4')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_4" onclick="loadFilament('prusa_mk2s_4')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_4" onclick="unloadFilament('prusa_mk2s_4')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_4')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_4')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_4')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_4" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_4')"/>
+            <label for="file-input-prusa_mk2s_4" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_4">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_4')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_4')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_4')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_4')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -246,23 +185,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_5', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_5')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_5" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_5')"/>
-        <label for="file-input-prusa_mk2s_5" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_5">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_5')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_5')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_5')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_5')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_5" onclick="loadFilament('prusa_mk2s_5')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_5" onclick="unloadFilament('prusa_mk2s_5')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_5', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_5', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_5', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_5')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_5" onclick="loadFilament('prusa_mk2s_5')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_5" onclick="unloadFilament('prusa_mk2s_5')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_5')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_5')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_5')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_5" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_5')"/>
+            <label for="file-input-prusa_mk2s_5" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_5">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_5')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_5')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_5')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_5')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -273,23 +222,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_6', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_6')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_6" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_6')"/>
-        <label for="file-input-prusa_mk2s_6" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_6">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_6')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_6')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_6')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_6')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_6" onclick="loadFilament('prusa_mk2s_6')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_6" onclick="unloadFilament('prusa_mk2s_6')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_6', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_6', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_6', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_6')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_6" onclick="loadFilament('prusa_mk2s_6')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_6" onclick="unloadFilament('prusa_mk2s_6')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_6')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_6')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_6')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_6" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_6')"/>
+            <label for="file-input-prusa_mk2s_6" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_6">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_6')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_6')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_6')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_6')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -300,23 +259,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_7', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_7')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_7" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_7')"/>
-        <label for="file-input-prusa_mk2s_7" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_7">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_7')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_7')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_7')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_7')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_7" onclick="loadFilament('prusa_mk2s_7')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_7" onclick="unloadFilament('prusa_mk2s_7')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_7', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_7', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_7', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_7')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_7" onclick="loadFilament('prusa_mk2s_7')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_7" onclick="unloadFilament('prusa_mk2s_7')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_7')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_7')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_7')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_7" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_7')"/>
+            <label for="file-input-prusa_mk2s_7" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_7">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_7')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_7')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_7')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_7')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -327,23 +296,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_8', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_8')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_8" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_8')"/>
-        <label for="file-input-prusa_mk2s_8" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_8">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_8')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_8')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_8')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_8')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_8" onclick="loadFilament('prusa_mk2s_8')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_8" onclick="unloadFilament('prusa_mk2s_8')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_8', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_8', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_8', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_8')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_8" onclick="loadFilament('prusa_mk2s_8')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_8" onclick="unloadFilament('prusa_mk2s_8')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_8')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_8')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_8')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_8" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_8')"/>
+            <label for="file-input-prusa_mk2s_8" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_8">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_8')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_8')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_8')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_8')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -354,23 +333,33 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_9', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_9')">Cooldown</button>
-    </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_9" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_9')"/>
-        <label for="file-input-prusa_mk2s_9" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_9">No file selected</span>
-        <button onclick="startPrint('pr        usa_mk2s_9')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_9')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_9')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_9')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_9" onclick="loadFilament('prusa_mk2s_9')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_9" onclick="unloadFilament('prusa_mk2s_9')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_9', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_9', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_9', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_9')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_9" onclick="loadFilament('prusa_mk2s_9')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_9" onclick="unloadFilament('prusa_mk2s_9')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_9')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_9')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_9')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_9" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_9')"/>
+            <label for="file-input-prusa_mk2s_9" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_9">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_9')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_9')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_9')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_9')">Cancel Print</button>
+        </div>
     </div>
 </div>
 
@@ -381,26 +370,34 @@
         <p>Print Status: Loading...</p>
         <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
     </div>
-    <div class="control-column">
-        <button onclick="preheat('prusa_mk2s_10', 'PLA')">Preheat PLA</button>
-        <button onclick="cooldown('prusa_mk2s_10')">Cooldown</button>
+    <div class="control-columns-container">
+        <div class="control-column">
+            <h4>Preheat/Cooldown</h4>
+            <button onclick="preheat('prusa_mk2s_10', 'PLA')">Preheat PLA</button>
+            <button onclick="preheat('prusa_mk2s_10', 'ABS')">Preheat ABS</button>
+            <button onclick="preheat('prusa_mk2s_10', 'PET')">Preheat PET</button>
+            <button onclick="cooldown('prusa_mk2s_10')">Cooldown</button>
+            <button id="load-filament-prusa_mk2s_10" onclick="loadFilament('prusa_mk2s_10')" disabled>Load Filament</button>
+            <button id="unload-filament-prusa_mk2s_10" onclick="unloadFilament('prusa_mk2s_10')" disabled>Unload Filament</button>
+            <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
+        </div>
+        <div class="control-column">
+            <h4>Calibration</h4>
+            <button onclick="autoHome('prusa_mk2s_10')">Auto Home</button>
+            <button onclick="meshBedLeveling('prusa_mk2s_10')">Mesh Bed Leveling</button>
+            <button onclick="resetXYZCalibration('prusa_mk2s_10')">Reset XYZ Calibration</button>
+        </div>            
+        <div class="control-column">
+            <h4>Printing</h4>
+            <input type="file" id="file-input-prusa_mk2s_10" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_10')"/>
+            <label for="file-input-prusa_mk2s_10" style="cursor: pointer;">Choose File (.gcode)</label>
+            <span id="file-name-display-prusa_mk2s_10">No file selected</span>
+            <button onclick="startPrint('prusa_mk2s_10')">Start Print</button>
+            <button onclick="pausePrint('prusa_mk2s_10')">Pause Print</button>
+            <button onclick="resumePrint('prusa_mk2s_10')">Resume Print</button>
+            <button onclick="cancelPrint('prusa_mk2s_10')">Cancel Print</button>
+        </div>
     </div>
-    <div class="control-column">
-        <input type="file" id="file-input-prusa_mk2s_10" accept=".gcode" style="display:none" onchange="handleFileSelect('prusa_mk2s_10')"/>
-        <label for="file-input-prusa_mk2s_10" style="cursor: pointer;">Choose File (.gcode)</label>
-        <span id="file-name-display-prusa_mk2s_10">No file selected</span>
-        <button onclick="startPrint('prusa_mk2s_10')">Start Print</button>
-        <button onclick="pausePrint('prusa_mk2s_10')">Pause Print</button>
-        <button onclick="resumePrint('prusa_mk2s_10')">Resume Print</button>
-        <button onclick="cancelPrint('prusa_mk2s_10')">Cancel Print</button>
-    </div>
-    <div class="control-column">
-        <button id="load-filament-prusa_mk2s_10" onclick="loadFilament('prusa_mk2s_10')" disabled>Load Filament</button>
-        <button id="unload-filament-prusa_mk2s_10" onclick="unloadFilament('prusa_mk2s_10')" disabled>Unload Filament</button>
-        <p><small>The hotend nozzle must be over 190°C to enable these buttons.</small></p>
-    </div>
-</div>
-</div>
 </div>
 
 
@@ -689,154 +686,7 @@
         </div>
     </div>
 </div>
-      
- <!-- Calibration Tab -->
-<div id="Calibration" class="tabcontent">
-    <h2>Calibration</h2>
-
-    <div class="calibration-grid">
-        <!-- Printer 1 -->
-        <div class="printer-card" id="prusa_mk2s_1">
-            <h3>Prusa MK2S 1</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_1')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_1')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_1')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 2 -->
-        <div class="printer-card" id="prusa_mk2s_2">
-            <h3>Prusa MK2S 2</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_2')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_2')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_2')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 3 -->
-        <div class="printer-card" id="prusa_mk2s_3">
-            <h3>Prusa MK2S 3</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_3')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_3')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_3')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 4 -->
-        <div class="printer-card" id="prusa_mk2s_4">
-            <h3>Prusa MK2S 4</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_4')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_4')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_4')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 5 -->
-        <div class="printer-card" id="prusa_mk2s_5">
-            <h3>Prusa MK2S 5</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_5')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_5')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_5')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 6 -->
-        <div class="printer-card" id="prusa_mk2s_6">
-            <h3>Prusa MK2S 6</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_6')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_6')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_6')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 7 -->
-        <div class="printer-card" id="prusa_mk2s_7">
-            <h3>Prusa MK2S 7</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_7')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_7')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_7')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 8 -->
-        <div class="printer-card" id="prusa_mk2s_8">
-            <h3>Prusa MK2S 8</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_8')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_8')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_8')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 9 -->
-        <div class="printer-card" id="prusa_mk2s_9">
-            <h3>Prusa MK2S 9</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_9')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_9')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_9')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-
-        <!-- Printer 10 -->
-        <div class="printer-card" id="prusa_mk2s_10">
-            <h3>Prusa MK2S 10</h3>
-            <div class="printer-status">
-                <p>Print Status: N/A</p>
-                <p>Hotend Temp: N/A °C | Bed Temp: N/A °C</p>
-            </div>
-            <div class="button-grid1">
-                <button onclick="autoHome('prusa_mk2s_10')">Auto Home</button>
-                <button onclick="meshBedLeveling('prusa_mk2s_10')">Mesh Bed Leveling</button>
-                <button onclick="resetXYZCalibration('prusa_mk2s_10')">Reset XYZ Calibration</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+    
 
     <script>
         // JavaScript funkcija za otvaranje tabova
@@ -853,123 +703,37 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
-        // Funkcija za otvaranje notifikacijskog modala
-        function openNotifications() {
-            document.getElementById('notificationModal').style.display = 'block';
-        }
 
-        // Funkcija za zatvaranje notifikacijskog modala
-        function closeNotifications() {
-            document.getElementById('notificationModal').style.display = 'none';
-        }
 
-        // Postavi početni tab kao default (otvori Control Panel pri učitavanju)
-        document.getElementById("defaultOpen").click();
+        document.addEventListener('DOMContentLoaded', () => {
+    // Open the "Control Panel" tab by default when the page loads
+    const controlPanelButton = document.querySelector('button[onclick="openTab(event, \'ControlPanel\')"]');
+    if (controlPanelButton) {
+        controlPanelButton.click(); // Simulate a click to open the Control Panel tab
+    }
+});
 
-        // Funkcija za dohvaćanje trenutno odabranog printera
-        function getSelectedPrinter() {
-            return document.getElementById('printer-select').value;
-        }
 
     
-
-// Function for adding notifications
-function addNotification(printerId, message) {
-    const notificationList = document.getElementById('notification-list');
-    const notification = document.createElement('div');
-
-    const now = new Date();
-    const dateTime = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-
-    notification.textContent = `${dateTime} - Printer: ${printerId} - ${message}`;
-    notificationList.appendChild(notification);
-}
+let selectedFileNames = {};  // Globalna varijabla za pohranu odabranih datoteka po printeru
 
 function handleFileSelect(printerId) {
     const fileInput = document.getElementById(`file-input-${printerId}`);
+    const fileNameDisplay = document.getElementById(`file-name-display-${printerId}`);
+    const startPrintButton = document.getElementById(`start-print-${printerId}`);
     const file = fileInput.files[0];
-    if (!file) {
-        alert('No file selected.');
-        return;
-    }
-    const formData = new FormData();
-    formData.append('file', file);
 
-    fetch(`/api/upload_gcode_and_print/${printerId}`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            document.getElementById(`file-name-display-${printerId}`).textContent = file.name;
-            addNotification(printerId, `File "${file.name}" uploaded and printing started.`);
+    if (file) {
+        if (file.name.endsWith('.gcode')) {
+            console.log('File selected:', file.name); // Provjera jesu li informacije o fajlu dostupne
+            fileNameDisplay.textContent = file.name; // Ažuriranje prikaza imena fajla
+            startPrintButton.disabled = false;       // Omogući gumb za početak ispisa
         } else {
-            alert(`Failed to print: ${data.message}`);
-            addNotification(printerId, `Failed to print: ${data.message}`);
+            fileNameDisplay.textContent = 'Invalid file. Please select a .gcode file.';
+            startPrintButton.disabled = true;        // Onemogući gumb ako nije .gcode
         }
-    })
-    .catch(error => {
-        console.error('Error during printing:', error);
-        alert('Error during printing.');
-        addNotification(printerId, 'Error during printing.');
-    });
-}
-
-
-  // Functions for each calibration action
-
-    // Auto Home (G28)
-    function autoHome() {
-    const printerIds = getSelectedPrinters(); // Get selected printers (single or multiple)
-    sendGcode(printerIds, 'G28', () => {
-        printerIds.forEach(printerId => {
-            addNotification(printerId, 'Auto Home executed.');
-        });
-    });
-}
-
-
-// Toggle multi-printer checkbox visibility and disable single printer dropdown
-function toggleMultiPrinter() {
-    const isChecked = document.getElementById('multi-printer-toggle').checked;
-    const multiPrinterCheckboxesContainer = document.getElementById('multi-printer-checkboxes-container');
-    const singlePrinterSelect = document.getElementById('printer-select');
-    const singlePrinterStatus = document.getElementById('single-printer-status');
-    const statusContainer = document.getElementById('status-container');
-
-    // Show or hide multi-printer checkboxes
-    multiPrinterCheckboxesContainer.style.display = isChecked ? 'block' : 'none';
-
-
-    // If multi-printer mode is enabled, forget previously selected printer and clear statuses
-    if (isChecked) {
-        singlePrinterSelect.value = "";  // Reset the single printer select
-        singlePrinterStatus.style.display = "none"; // Hide the single printer status
-
-        // Show multi-printer statuses
-        updatePrinterStatuses();
-    } else {
-        singlePrinterStatus.style.display = "block"; // Show single printer status
-        statusContainer.innerHTML = ''; // Clear multi-printer statuses
     }
 }
-
-// Get selected printers from checkboxes or dropdown
-function getSelectedPrinters() {
-    const isMultiPrinterEnabled = document.getElementById('multi-printer-toggle').checked;
-    if (isMultiPrinterEnabled) {
-        const selectedPrinters = [];
-        const checkboxes = document.querySelectorAll('#multi-printer-checkboxes-container input[type="checkbox"]:checked');
-        checkboxes.forEach(checkbox => {
-            selectedPrinters.push(checkbox.value);
-        });
-        return selectedPrinters;
-    } else {
-        return [document.getElementById('printer-select').value];
-    }
-}
-
 
 // Update and show statuses for selected printers
 function updatePrinterStatuses() {
@@ -994,14 +758,6 @@ function updatePrinterStatuses() {
         fetchPrinterStatus(printerId);
     });
 }
-
-// Ensure statuses are updated when toggling multi-printer mode
-document.getElementById('multi-printer-toggle').addEventListener('change', toggleMultiPrinter);
-
-// Ensure statuses update whenever checkboxes change in multi-printer mode
-document.querySelectorAll('#multi-printer-checkboxes-container input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', updatePrinterStatuses);
-});
 
 
     </script>

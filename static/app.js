@@ -2,7 +2,6 @@
 function getPrinterStatus() {
     const printerId = document.getElementById('printer-select').value;
     sendGcode(printerId, 'M27');  // Komanda za prikaz statusa ispisa
-    sendGcode(printerId, 'M119'); // Komanda za prikaz krajnjih prekidača
 
     fetch('/api/control', {
         method: 'POST',
@@ -110,16 +109,6 @@ function unloadFilament() {
     addNotification(printerId, 'Filament unloaded');
 }
 
-// Funkcija za postavke printera (bez postavke brzine ventilatora)
-function setSettings() {
-    const printerId = document.getElementById('printer-select').value;
-    const nozzleTemp = document.getElementById('nozzle-temp').value;
-    const bedTemp = document.getElementById('bed-temp').value;
-
-    sendGcode(printerId, `M104 S${nozzleTemp}`);  // Postavi temperaturu mlaznice
-    sendGcode(printerId, `M140 S${bedTemp}`);     // Postavi temperaturu podloge
-}
-
 
 // Function to move the axis for a specific printer
 function moveAxis(printerId, axis, direction) {
@@ -153,16 +142,7 @@ function generateCalibrationCards() {
         printerCard.innerHTML = `
             <h3>${printerId.replace('_', ' ').toUpperCase()}</h3>
             <button onclick="autoHome('${printerId}')">Auto Home</button>
-            <button onclick="selfTest('${printerId}')">Self Test</button>
-            <button onclick="calibrateXYZ('${printerId}')">Calibrate XYZ</button>
-            <button onclick="calibrateZ('${printerId}')">Calibrate Z</button>
-            <button onclick="firstLayerCalibration('${printerId}')">First Layer Calibration</button>
             <button onclick="meshBedLeveling('${printerId}')">Mesh Bed Leveling</button>
-            <button onclick="wizard('${printerId}')">Wizard</button>
-            <button onclick="bedLevelCorrection('${printerId}')">Bed Level Correction</button>
-            <button onclick="tempCalibration('${printerId}')">Temperature Calibration</button>
-            <button onclick="pidCalibration('${printerId}')">PID Calibration</button>
-            <button onclick="showEndStops('${printerId}')">Show End Stops</button>
             <button onclick="resetXYZCalibration('${printerId}')">Reset XYZ Calibration</button>
         `;
         calibrationContainer.appendChild(printerCard);  // Add card to the grid
@@ -178,56 +158,10 @@ function autoHome(printerId) {
     addNotification(printerId, 'Auto Home executed.');
 }
 
-function selfTest(printerId) {
-    sendGcode(printerId, 'M997');
-    addNotification(printerId, 'Self Test initiated.');
-}
-
-function calibrateXYZ(printerId) {
-    sendGcode(printerId, 'G29');
-    addNotification(printerId, 'XYZ Calibration started.');
-}
-
-function calibrateZ(printerId) {
-    sendGcode(printerId, 'G80');
-    addNotification(printerId, 'Z Calibration initiated.');
-}
-
-function firstLayerCalibration(printerId) {
-    sendGcode(printerId, 'M861');
-    addNotification(printerId, 'First Layer Calibration started.');
-}
-
 function meshBedLeveling(printerId) {
     sendGcode(printerId, 'G80');
     sendGcode(printerId, 'G29');
     addNotification(printerId, 'Mesh Bed Leveling in progress.');
-}
-
-function wizard(printerId) {
-    sendGcode(printerId, 'M502');
-    addNotification(printerId, 'Wizard initiated.');
-}
-
-function bedLevelCorrection(printerId) {
-    sendGcode(printerId, 'M862');
-    addNotification(printerId, 'Bed Level Correction initiated.');
-}
-
-function tempCalibration(printerId) {
-    sendGcode(printerId, 'M303');
-    addNotification(printerId, 'Temperature Calibration started.');
-}
-
-function pidCalibration(printerId) {
-    sendGcode(printerId, 'M303 E0 S240 C8');
-    sendGcode(printerId, 'M500');
-    addNotification(printerId, 'PID Calibration completed.');
-}
-
-function showEndStops(printerId) {
-    sendGcode(printerId, 'M119');
-    addNotification(printerId, 'End Stop status requested.');
 }
 
 function resetXYZCalibration(printerId) {
@@ -321,17 +255,6 @@ function monitorPrinterStatus() {
 
 // Periodically monitor printer status every 5 seconds
 setInterval(monitorPrinterStatus, 5000);
-
-// Function to display status updates in the UI
-/*function updateStatusDisplay(printerId, status) {
-    const statusElement = document.getElementById(`status-${printerId}`);
-    statusElement.innerHTML = `
-        <strong>${printerId.replace('_', ' ').toUpperCase()}:</strong>
-        <br><strong>Print Status:</strong> ${status.print_status}
-        <br><strong>Hotend Temperature:</strong> ${status.hotend_temp || 'N/A'} °C
-        <br><strong>Bed Temperature:</strong> ${status.bed_temp || 'N/A'} °C
-    `;
-} */
 
   function updateStatusDisplay(printerId, status) {
     // Get relevant elements
@@ -474,8 +397,6 @@ function updateControlPanel() {
 }
 
 
-let selectedFileNames = {};  // Globalna varijabla za pohranu odabranih fajlova po printeru
-
 // Funkcija za rukovanje odabirom fajla
 function handleFileSelect(printerId) {
     const fileInput = document.getElementById(`file-input-${printerId}`);
@@ -537,6 +458,24 @@ function startPrint(printerId) {
 }
 
 
+// Fetch the list of printers from the backend
+function fetchPrinterIds() {
+    return fetch('/api/printers')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                return data.printers; // Return the list of printer IDs
+            } else {
+                console.error('Failed to fetch printer IDs');
+                return [];
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching printer IDs:', error);
+            return [];
+        });
+}
+
 // Function to fetch printer status and update the UI, including enabling/disabling filament buttons
 function fetchPrinterStatus(printerId) {
     fetch('/api/status', {
@@ -554,13 +493,14 @@ function fetchPrinterStatus(printerId) {
             const printerStatus = data.response;
             const hotendTemp = printerStatus.hotend_temp || 'N/A';
 
+            // Update printer status display
             statusElement.innerHTML = `
                 <h3>${printerId.replace('_', ' ').toUpperCase()}</h3>
                 <p>Print Status: ${printerStatus.print_status || 'N/A'}</p>
                 <p>Hotend Temp: ${hotendTemp} °C | Bed Temp: ${printerStatus.bed_temp || 'N/A'} °C</p>
             `;
 
-            // Enable/disable Load/Unload filament buttons based on hotend temperature
+            // Enable or disable the filament buttons based on the hotend temperature
             if (hotendTemp !== 'N/A' && parseFloat(hotendTemp) > 190) {
                 loadFilamentBtn.disabled = false;
                 unloadFilamentBtn.disabled = false;
@@ -578,17 +518,16 @@ function fetchPrinterStatus(printerId) {
         console.error('Error fetching printer status:', error);
         const statusElement = document.getElementById(`status-${printerId}`);
         statusElement.innerHTML = `<p>Error fetching status</p>`;
-        document.getElementById(`load-filament-${printerId}`).disabled = true;
-        document.getElementById(`unload-filament-${printerId}`).disabled = true;
+        loadFilamentBtn.disabled = true;
+        unloadFilamentBtn.disabled = true;
     });
 }
 
-// Periodically monitor printer status every 5 seconds
-setInterval(() => {
-    printerIds.forEach(printerId => {
-        fetchPrinterStatus(printerId); // Proveri status za svaki printer u listi
-    });
-}, 5000);
+// Periodically fetch the status for all printers every 5 seconds
+setInterval(async () => {
+    const printerIds = await fetchPrinterIds(); // Fetch printer IDs dynamically
+    printerIds.forEach(printerId => fetchPrinterStatus(printerId));
+}, 2000); // Set to 2 seconds (2000 milliseconds)
 
 
 
