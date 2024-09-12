@@ -91,7 +91,7 @@ function checkHotendTemperature() {
 }
 
 // Periodically check temperature for all printers every 5 seconds
-setInterval(checkHotendTemperature, 5000);
+setInterval(checkHotendTemperature, 1000);
 
 
 
