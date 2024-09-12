@@ -15,29 +15,7 @@ function getPrinterStatus() {
       });
 }
 
-// Updated sendGcode function to handle multiple printers
-function sendGcode(printerIds, gcode, callback) {
-    printerIds.forEach(printerId => {
-        fetch('/api/control', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ printer_id: printerId, gcode_command: gcode })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(`G-code response from ${printerId}:`, data);
-            if (callback) {
-                callback();
-            }
-        })
-        .catch(error => {
-            console.error(`Error sending G-code to ${printerId}:`, error);
-            addNotification(printerId, 'Error sending G-code.');
-        });
-    });
-}
+
 
 // Function to check the hotend temperature and enable/disable filament buttons using G-code
 function checkHotendTemperature() {
@@ -91,7 +69,7 @@ function checkHotendTemperature() {
 }
 
 // Periodically check temperature for all printers every 5 seconds
-setInterval(checkHotendTemperature, 1000);
+setInterval(checkHotendTemperature, 5000);
 
 
 
